@@ -440,3 +440,111 @@ Create a PR to close INCEPTION"
 **Context**: INCEPTION closure and PR creation
 
 ---
+
+## Functional Design Branch Request
+**Timestamp**: 2026-07-24T07:39:00.773+02:00
+**User Input**: "<current_datetime>2026-07-24T07:39:00.773+02:00</current_datetime>
+
+Refresh local repo and create branch for functional-design"
+**AI Response**: "Fast-forwarded local main from origin and created/switched to branch `construction-functional-design` for the Functional Design stage."
+**Context**: CONSTRUCTION stage branch setup
+
+---
+
+## Branch Visibility Question
+**Timestamp**: 2026-07-24T07:41:05.334+02:00
+**User Input**: "<current_datetime>2026-07-24T07:41:05.334+02:00</current_datetime>
+
+Where can I see the branch I'm working on in GitHub Copilot UI?"
+**AI Response**: "Explained where the current branch is shown in the Copilot UI session header/sidebar and confirmed current branch name."
+**Context**: UI guidance
+
+---
+
+## CONSTRUCTION - Functional Design UOW-01 Start
+**Timestamp**: 2026-07-24T07:51:20.601+02:00
+**User Input**: "Plan filled with answers"
+**AI Response**: "All 14 answers reviewed — clear, no ambiguities. Generated three functional design artifacts for UOW-01: domain-entities.md (8 entities across 4 stores, shared primitives, PBT-01 property table), business-rules.md (12 business rules: BR-01 to BR-12), business-logic-model.md (store lifecycle flows, migration, concurrency, credential lifecycle, assignment active-status, policy loading, repository interfaces, error reference). Updated plan checklist to all [x], updated aidlc-state.md."
+**Context**: CONSTRUCTION Phase - Functional Design UOW-01 artifact generation
+
+---
+
+## CONSTRUCTION - NFR Requirements UOW-01 Start
+**Timestamp**: 2026-07-24T07:58:38.638+02:00
+**User Input**: "Continue to Next Stage"
+**AI Response**: "Functional Design UOW-01 approved. Created NFR Requirements plan at aidlc-docs/construction/plans/uow-01-nfr-requirements-plan.md with 7 focused questions (Q1-Q7) covering .NET version, JSON serialisation library, logging framework, test runner, PBT framework (PBT-09 required), and read/write latency targets. All INCEPTION-locked decisions pre-documented as context. Awaiting user answers."
+**Context**: CONSTRUCTION Phase - NFR Requirements UOW-01 planning
+
+---
+
+## CONSTRUCTION - NFR Requirements UOW-01 Answers and Artifacts
+**Timestamp**: 2026-07-24T08:18:45.429+02:00
+**User Input**: "<current_datetime>2026-07-24T08:18:45.429+02:00</current_datetime>
+
+<tools_changed_notice>
+Tools no longer available: create, edit
+
+Important: Do not attempt to call tools that are no longer available unless you've been notified that they're available again.
+</tools_changed_notice>
+
+Answers provided in plan"
+**AI Response**: "Reviewed all 7 answers and generated NFR artifacts for UOW-01 at aidlc-docs/construction/uow-01-foundation/nfr-requirements/: nfr-requirements.md and tech-stack-decisions.md. Captured runtime, logging, testing, PBT framework, and latency targets; documented .NET preview production gate; recorded PBT-09 framework compliance; updated plan checklist and aidlc-state progress."
+**Context**: CONSTRUCTION Phase - NFR Requirements UOW-01 artifact generation
+
+---
+
+## CONSTRUCTION - NFR Requirements UOW-01 Approval and NFR Design Start
+**Timestamp**: 2026-07-24T08:24:19.799+02:00
+**User Input**: "<current_datetime>2026-07-24T08:24:19.799+02:00</current_datetime>
+
+**Continue to Next Stage**"
+**AI Response**: "Recorded NFR Requirements approval. Created NFR Design plan at aidlc-docs/construction/plans/uow-01-nfr-design-plan.md with 10 [Answer]-tag questions covering resilience patterns, scalability boundaries, performance optimization strategy, security patterns, logical component boundaries, and .NET preview runtime release gating."
+**Context**: CONSTRUCTION Phase - NFR Design UOW-01 planning
+
+---
+
+## CONSTRUCTION - NFR Design UOW-01 Answers and Artifacts
+**Timestamp**: 2026-07-24T08:31:02.931+02:00
+**User Input**: "<current_datetime>2026-07-24T08:31:02.931+02:00</current_datetime>
+
+All answers in plan"
+**AI Response**: "Reviewed all 10 NFR design answers and generated NFR design artifacts at aidlc-docs/construction/uow-01-foundation/nfr-design/: nfr-design-patterns.md and logical-components.md. Updated plan checklist to complete and moved aidlc-state to NFR Design UOW-01 Review."
+**Context**: CONSTRUCTION Phase - NFR Design UOW-01 artifact generation
+
+---
+
+## CONSTRUCTION - NFR Design UOW-01 Approval and Infrastructure Design Start
+**Timestamp**: 2026-07-24T08:37:35.308+02:00
+**User Input**: "<current_datetime>2026-07-24T08:37:35.308+02:00</current_datetime>
+
+**Continue to Next Stage**"
+**AI Response**: "Recorded NFR Design approval and created Infrastructure Design plan at aidlc-docs/construction/plans/uow-01-infrastructure-design-plan.md with 10 [Answer]-tag questions covering deployment environment, compute, storage, backup/restore, messaging, networking, monitoring, shared infrastructure, environment topology, and preview-runtime release control."
+**Context**: CONSTRUCTION Phase - Infrastructure Design UOW-01 planning
+
+---
+
+## CONSTRUCTION - Infrastructure Design UOW-01 Answers and Artifacts
+**Timestamp**: 2026-07-24T08:40:00.100+02:00
+**User Input**: "<current_datetime>2026-07-24T08:40:00.100+02:00</current_datetime>
+
+Answers provided"
+**AI Response**: "Reviewed all 10 infrastructure answers and generated infrastructure artifacts for UOW-01 at aidlc-docs/construction/uow-01-foundation/infrastructure-design/: infrastructure-design.md and deployment-architecture.md. Because shared infrastructure was selected, also generated aidlc-docs/construction/shared-infrastructure.md. Updated plan checklist to complete and moved aidlc-state to Infrastructure Design UOW-01 Review."
+**Context**: CONSTRUCTION Phase - Infrastructure Design UOW-01 artifact generation
+
+---
+
+## CONSTRUCTION - Infrastructure Design UOW-01 Approval and PR Request
+**Timestamp**: 2026-07-24T08:51:33.402+02:00
+**User Input**: "<current_datetime>2026-07-24T08:51:33.402+02:00</current_datetime>
+
+<tools_changed_notice>
+Tools no longer available: create, edit
+
+Important: Do not attempt to call tools that are no longer available unless you've been notified that they're available again.
+</tools_changed_notice>
+
+Approve infra design, then create PR to close design"
+**AI Response**: "Recorded Infrastructure Design approval for UOW-01, updated AI-DLC state to Code Generation UOW-01 Ready, and prepared a pull request to close the UOW-01 design stages."
+**Context**: CONSTRUCTION Phase - Infrastructure Design approval and PR preparation
+
+---

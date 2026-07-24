@@ -1,0 +1,37 @@
+{
+  "tokenLifetimeSeconds": 3600,
+  "adminTokenLifetimeSeconds": 900,
+  "tokenIssuer": "auth-module",
+  "tokenAudience": "auth-module-clients",
+  "maxLoginAttempts": 5,
+  "lockoutDurationSeconds": 900,
+  "storeBasePath": "/data",
+  "encryptionKeyPath": "/run/secrets/encryption-key",
+  "hmacKeyPath": "/run/secrets/hmac-key",
+  "auditEventRetentionDays": 365,
+  "userRecordRetentionDays": 3650,
+  "incidentRecordRetentionDays": 2555,
+  "sodApprovalRequiredForRoleChanges": true,
+  "coreSecurity": {
+    "maxLoginAttempts": 5,
+    "lockoutDurationSeconds": 900,
+    "stepUpChallengeTtlSeconds": 300,
+    "tokenValidationCacheSeconds": 15,
+    "approvalRetryCount": 2,
+    "tokenSigningKey": "dev-signing-key-change-me"
+  },
+  "governance": {
+    "defaultQueryPageSize": 100,
+    "maxQueryPageSize": 500,
+    "exportChunkSize": 500,
+    "backupMetadataFreshnessSeconds": 30,
+    "evidenceRetentionMinimumDays": 180,
+    "previewRuntimeApproved": true
+  },
+  "integration": {
+    "repositoryRootPath": ".",
+    "gateDecisionTimeoutSeconds": 15,
+    "gateEvidenceRetentionDays": 90,
+    "previewRuntimeApproved": true
+  }
+}

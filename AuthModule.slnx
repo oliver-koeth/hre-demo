@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/AuthModule/">
+    <Project Path="src/AuthModule/Foundation/Foundation.csproj" />
+    <Project Path="src/AuthModule/CoreSecurity/CoreSecurity.csproj" />
+    <Project Path="src/AuthModule/Governance/Governance.csproj" />
+    <Project Path="src/AuthModule/Integration/Integration.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/AuthModule.Foundation.Tests/AuthModule.Foundation.Tests.csproj" />
+    <Project Path="tests/AuthModule.CoreSecurity.Tests/AuthModule.CoreSecurity.Tests.csproj" />
+    <Project Path="tests/AuthModule.Governance.Tests/AuthModule.Governance.Tests.csproj" />
+    <Project Path="tests/AuthModule.Integration.Tests/AuthModule.Integration.Tests.csproj" />
+  </Folder>
+</Solution>

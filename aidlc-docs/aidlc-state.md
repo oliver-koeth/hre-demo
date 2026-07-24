@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-07-23T07:37:55+02:00
-- **Current Stage**: CONSTRUCTION - Functional Design Ready
+- **Current Stage**: CONSTRUCTION - Code Generation UOW-01 Ready
 
 ## Workspace State
 - **Existing Code**: No
@@ -38,6 +38,10 @@
 
 ### 🟢 CONSTRUCTION PHASE
 - [ ] Functional Design (per-unit, TBD)
+  - [x] UOW-01 Foundation — Functional Design approved
+  - [x] UOW-01 Foundation — NFR Requirements approved
+  - [x] UOW-01 Foundation — NFR Design approved
+  - [x] UOW-01 Foundation — Infrastructure Design approved
 - [ ] NFR Requirements (per-unit, TBD)
 - [ ] NFR Design (per-unit, TBD)
 - [ ] Infrastructure Design (per-unit, TBD)

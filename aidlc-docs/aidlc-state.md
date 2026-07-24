@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-07-23T07:37:55+02:00
-- **Current Stage**: INCEPTION - Application Design Ready
+- **Current Stage**: CONSTRUCTION - Functional Design Ready
 
 ## Workspace State
 - **Existing Code**: No
@@ -33,8 +33,8 @@
 - [x] Requirements Analysis
 - [x] User Stories
 - [x] Workflow Planning
-- [ ] Application Design (EXECUTE)
-- [ ] Units Generation (EXECUTE)
+- [x] Application Design (EXECUTE)
+- [x] Units Generation (EXECUTE)
 
 ### 🟢 CONSTRUCTION PHASE
 - [ ] Functional Design (per-unit, TBD)

@@ -1,0 +1,96 @@
+services:
+  auth-module-foundation:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: auth-module-foundation
+    command: ["dotnet", "--info"]
+    restart: "no"
+    networks:
+      - foundation-internal
+    volumes:
+      - foundation-data:/data
+      - ./config:/config:ro
+      - ./secrets:/run/secrets:ro
+    environment:
+      - POLICY_CONFIG_PATH=/config/policy.template.json
+    ports: []
+
+  auth-module-core-security:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: auth-module-core-security
+    command: ["dotnet", "--info"]
+    restart: "no"
+    depends_on:
+      - auth-module-foundation
+    networks:
+      - foundation-internal
+    volumes:
+      - foundation-data:/data
+      - ./config:/config:ro
+      - ./secrets:/run/secrets:ro
+    environment:
+      - POLICY_CONFIG_PATH=/config/policy.template.json
+    ports: []
+
+  auth-module-governance:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: auth-module-governance
+    command: ["dotnet", "--info"]
+    restart: "no"
+    depends_on:
+      - auth-module-core-security
+    networks:
+      - foundation-internal
+    volumes:
+      - foundation-data:/data
+      - ./config:/config:ro
+      - ./secrets:/run/secrets:ro
+    environment:
+      - POLICY_CONFIG_PATH=/config/policy.template.json
+    ports: []
+
+  auth-module-integration:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: auth-module-integration
+    command: ["dotnet", "--info"]
+    restart: "no"
+    depends_on:
+      - auth-module-governance
+    networks:
+      - foundation-internal
+    volumes:
+      - foundation-data:/data
+      - ./config:/config:ro
+      - ./secrets:/run/secrets:ro
+    environment:
+      - POLICY_CONFIG_PATH=/config/policy.template.json
+    ports: []
+
+  backup-scheduler:
+    image: alpine:3.20.3
+    container_name: foundation-backup-scheduler
+    command: ["/bin/sh", "-c", "while true; do /scripts/backup.sh; sleep 3600; done"]
+    restart: "no"
+    depends_on:
+      - auth-module-foundation
+    networks:
+      - foundation-internal
+    volumes:
+      - foundation-data:/data:ro
+      - ./scripts:/scripts:ro
+      - ./backups:/backups
+
+networks:
+  foundation-internal:
+    driver: bridge
+    internal: true
+
+volumes:
+  foundation-data:

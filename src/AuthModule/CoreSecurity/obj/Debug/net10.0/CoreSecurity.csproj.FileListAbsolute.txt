@@ -1,0 +1,16 @@
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/CoreSecurity/obj/Debug/net10.0/CoreSecurity.csproj.AssemblyReference.cache
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/CoreSecurity/obj/Debug/net10.0/CoreSecurity.GeneratedMSBuildEditorConfig.editorconfig
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/CoreSecurity/obj/Debug/net10.0/CoreSecurity.AssemblyInfoInputs.cache
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/CoreSecurity/obj/Debug/net10.0/CoreSecurity.AssemblyInfo.cs
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/CoreSecurity/obj/Debug/net10.0/CoreSecurity.csproj.CoreCompileInputs.cache
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/CoreSecurity/obj/Debug/net10.0/CoreSecurity.sourcelink.json
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/CoreSecurity/bin/Debug/net10.0/CoreSecurity.deps.json
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/CoreSecurity/bin/Debug/net10.0/CoreSecurity.dll
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/CoreSecurity/bin/Debug/net10.0/CoreSecurity.pdb
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/CoreSecurity/bin/Debug/net10.0/Foundation.dll
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/CoreSecurity/bin/Debug/net10.0/Foundation.pdb
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/CoreSecurity/obj/Debug/net10.0/CoreSecu.F84DDE38.Up2Date
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/CoreSecurity/obj/Debug/net10.0/CoreSecurity.dll
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/CoreSecurity/obj/Debug/net10.0/refint/CoreSecurity.dll
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/CoreSecurity/obj/Debug/net10.0/CoreSecurity.pdb
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/CoreSecurity/obj/Debug/net10.0/ref/CoreSecurity.dll

@@ -1,0 +1,16 @@
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Integration/bin/Debug/net10.0/Integration.deps.json
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Integration/bin/Debug/net10.0/Integration.dll
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Integration/bin/Debug/net10.0/Integration.pdb
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Integration/bin/Debug/net10.0/Foundation.dll
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Integration/bin/Debug/net10.0/Foundation.pdb
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Integration/obj/Debug/net10.0/Integration.csproj.AssemblyReference.cache
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Integration/obj/Debug/net10.0/Integration.GeneratedMSBuildEditorConfig.editorconfig
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Integration/obj/Debug/net10.0/Integration.AssemblyInfoInputs.cache
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Integration/obj/Debug/net10.0/Integration.AssemblyInfo.cs
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Integration/obj/Debug/net10.0/Integration.csproj.CoreCompileInputs.cache
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Integration/obj/Debug/net10.0/Integration.sourcelink.json
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Integration/obj/Debug/net10.0/Integrat.B0B6ED80.Up2Date
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Integration/obj/Debug/net10.0/Integration.dll
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Integration/obj/Debug/net10.0/refint/Integration.dll
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Integration/obj/Debug/net10.0/Integration.pdb
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Integration/obj/Debug/net10.0/ref/Integration.dll

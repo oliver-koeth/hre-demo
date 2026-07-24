@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "dgSpecHash": "GJw88gld1Vc=",
+  "success": true,
+  "projectFilePath": "/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Foundation/Foundation.csproj",
+  "expectedPackageFiles": [
+    "/Users/Oliver.Koeth/.nuget/packages/microsoft.extensions.dependencymodel/8.0.2/microsoft.extensions.dependencymodel.8.0.2.nupkg.sha512",
+    "/Users/Oliver.Koeth/.nuget/packages/opentelemetry/1.17.0/opentelemetry.1.17.0.nupkg.sha512",
+    "/Users/Oliver.Koeth/.nuget/packages/opentelemetry.api/1.17.0/opentelemetry.api.1.17.0.nupkg.sha512",
+    "/Users/Oliver.Koeth/.nuget/packages/opentelemetry.api.providerbuilderextensions/1.17.0/opentelemetry.api.providerbuilderextensions.1.17.0.nupkg.sha512",
+    "/Users/Oliver.Koeth/.nuget/packages/opentelemetry.exporter.console/1.17.0/opentelemetry.exporter.console.1.17.0.nupkg.sha512",
+    "/Users/Oliver.Koeth/.nuget/packages/opentelemetry.extensions.hosting/1.17.0/opentelemetry.extensions.hosting.1.17.0.nupkg.sha512",
+    "/Users/Oliver.Koeth/.nuget/packages/opentelemetry.instrumentation.runtime/1.17.0/opentelemetry.instrumentation.runtime.1.17.0.nupkg.sha512",
+    "/Users/Oliver.Koeth/.nuget/packages/serilog/4.0.1/serilog.4.0.1.nupkg.sha512",
+    "/Users/Oliver.Koeth/.nuget/packages/serilog.aspnetcore/8.0.3/serilog.aspnetcore.8.0.3.nupkg.sha512",
+    "/Users/Oliver.Koeth/.nuget/packages/serilog.extensions.hosting/8.0.0/serilog.extensions.hosting.8.0.0.nupkg.sha512",
+    "/Users/Oliver.Koeth/.nuget/packages/serilog.extensions.logging/8.0.0/serilog.extensions.logging.8.0.0.nupkg.sha512",
+    "/Users/Oliver.Koeth/.nuget/packages/serilog.formatting.compact/2.0.0/serilog.formatting.compact.2.0.0.nupkg.sha512",
+    "/Users/Oliver.Koeth/.nuget/packages/serilog.settings.configuration/8.0.4/serilog.settings.configuration.8.0.4.nupkg.sha512",
+    "/Users/Oliver.Koeth/.nuget/packages/serilog.sinks.console/5.0.0/serilog.sinks.console.5.0.0.nupkg.sha512",
+    "/Users/Oliver.Koeth/.nuget/packages/serilog.sinks.debug/2.0.0/serilog.sinks.debug.2.0.0.nupkg.sha512",
+    "/Users/Oliver.Koeth/.nuget/packages/serilog.sinks.file/5.0.0/serilog.sinks.file.5.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

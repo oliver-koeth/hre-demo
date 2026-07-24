@@ -1,0 +1,16 @@
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Governance/bin/Debug/net10.0/Governance.deps.json
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Governance/bin/Debug/net10.0/Governance.dll
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Governance/bin/Debug/net10.0/Governance.pdb
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Governance/bin/Debug/net10.0/Foundation.dll
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Governance/bin/Debug/net10.0/Foundation.pdb
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Governance/obj/Debug/net10.0/Governance.csproj.AssemblyReference.cache
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Governance/obj/Debug/net10.0/Governance.GeneratedMSBuildEditorConfig.editorconfig
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Governance/obj/Debug/net10.0/Governance.AssemblyInfoInputs.cache
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Governance/obj/Debug/net10.0/Governance.AssemblyInfo.cs
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Governance/obj/Debug/net10.0/Governance.csproj.CoreCompileInputs.cache
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Governance/obj/Debug/net10.0/Governance.sourcelink.json
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Governance/obj/Debug/net10.0/Governance.csproj.Up2Date
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Governance/obj/Debug/net10.0/Governance.dll
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Governance/obj/Debug/net10.0/refint/Governance.dll
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Governance/obj/Debug/net10.0/Governance.pdb
+/Users/Oliver.Koeth/work/hre-demo/src/AuthModule/Governance/obj/Debug/net10.0/ref/Governance.dll

@@ -11,21 +11,26 @@ public static class IntegrationEndpoints
 {
     public static IEndpointRouteBuilder MapIntegrationEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/integration");
+        var group = app.MapGroup("/api/integration")
+            .WithTags("Integration");
 
         group.MapPost("/gate/execute", async (ExecuteGateRequest request, HttpContext httpContext, IIntegrationGateService service) =>
         {
             var context = BuildContext(httpContext);
             var result = await service.ExecuteAsync(request, context);
             return result.IsSuccess ? Results.Ok(result.Value) : result.Error.ToProblem();
-        });
+        })
+        .WithSummary("Executes the integration readiness gate.")
+        .WithDescription("Runs conformance, traceability, and unit-readiness checks and returns a gate decision.");
 
         group.MapGet("/gate/latest", async (HttpContext httpContext, IIntegrationGateService service) =>
         {
             var context = BuildContext(httpContext);
             var result = await service.GetLatestDecisionAsync(context);
             return result.IsSuccess ? Results.Ok(result.Value) : result.Error.ToProblem();
-        });
+        })
+        .WithSummary("Gets the latest gate decision.")
+        .WithDescription("Returns the most recently stored integration gate decision and evidence references.");
 
         return app;
     }

@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI-DLC V1 Walkthrough</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --card: #131a2e;
+      --card-2: #1a2340;
+      --text: #e6ecff;
+      --muted: #9aa7d6;
+      --accent: #6ea8fe;
+      --accent-2: #8df0cc;
+      --border: #2b3763;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .wrap {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    h1, h2 { margin: 0 0 12px; }
+    h1 { font-size: 1.7rem; }
+    h2 { font-size: 1.25rem; color: var(--accent-2); margin-top: 24px; }
+    p { margin: 10px 0; }
+    .prompt, .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .prompt code {
+      display: block;
+      white-space: pre-wrap;
+      color: var(--text);
+      background: #0c1328;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 0.95rem;
+    }
+    .nav {
+      position: sticky;
+      top: 0;
+      background: rgba(11,16,32,0.92);
+      backdrop-filter: blur(6px);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      z-index: 20;
+    }
+    .nav a {
+      text-decoration: none;
+      color: var(--text);
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 0.9rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 10px;
+    }
+    .step {
+      background: #111830;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .term {
+      color: var(--accent-2);
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+    .item-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+    .item-list li {
+      margin: 4px 0;
+    }
+    .item-list a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .item-list a:hover { text-decoration: underline; }
+    .item-pair .label {
+      color: var(--text);
+    }
+    .item-pair .mode {
+      margin-left: 2px;
+      font-size: 0.9em;
+    }
+    .muted { color: var(--muted); }
+    .link-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .link-card {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      text-decoration: none;
+      transition: border-color .15s, background .15s;
+    }
+    .link-card:hover { border-color: var(--accent); background: #1e2d50; }
+    .link-card .lc-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--muted);
+    }
+    .link-card .lc-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+    .link-card .lc-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .link-grid-header {
+      margin: 22px 0 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+    }
+    .mermaid-wrap {
+      background: #0d142b;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px;
+      overflow: auto;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(6, 10, 20, 0.7);
+      z-index: 1000;
+      padding: 20px;
+    }
+    .modal.open { display: flex; }
+    .modal-card {
+      width: min(980px, 95vw);
+      max-height: 90vh;
+      overflow: auto;
+      background: #0f1731;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .modal-title {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--accent-2);
+    }
+    .close-btn {
+      border: 1px solid var(--border);
+      background: #1a2340;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+    .md-content h1, .md-content h2, .md-content h3 { color: var(--accent-2); margin-top: 16px; }
+    .md-content code {
+      background: #0b1226;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1px 6px;
+    }
+    .md-content pre {
+      background: #0b1226;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      overflow: auto;
+    }
+    .md-content a { color: var(--accent); }
+    .hint {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Authentication Module V1 - AI-DLC Clickable Walkthrough</h1>
+
+    <div class="prompt" id="start-prompt">
+      <h2>L1.1: Initial Prompt</h2>
+      <code>Using AI-DLC I want to develop an authentication module (for now backend only) for a reinsurance subledger system. The backend shall be written in C#, the persistance shall be JSON file, the runtime shall be docker.</code>
+    </div>
+
+    <nav class="nav" aria-label="L1 navigation">
+      <a href="#knowledge">L1.2: Additional Knowledge</a>
+      <a href="#inception">L1.3: Inception</a>
+      <a href="#construction">L1.4: Construction</a>
+      <a href="#operations">L1.5: Operations</a>
+      <a href="#architecture">L1.6: Architecture</a>
+    </nav>
+
+    <section class="panel" id="knowledge">
+      <h2>L1.2: Additional Knowledge</h2>
+      <p class="muted">Compliance framework sources used during requirements and story refinement.</p>
+      <div class="grid">
+        <article class="step">
+          <span class="term">L2.1: Compliance Frameworks</span>
+          <ul class="item-list">
+            <li><a class="md-popup-link" href="../_knowledge/compliance-frameworks/dora.md">dora.md</a></li>
+            <li><a class="md-popup-link" href="../_knowledge/compliance-frameworks/gdpr.md">gdpr.md</a></li>
+            <li><a class="md-popup-link" href="../_knowledge/compliance-frameworks/iso-iec-27001-summary.md">iso-iec-27001-summary.md</a></li>
+            <li><a class="md-popup-link" href="../_knowledge/compliance-frameworks/soc2-summary.md">soc2-summary.md</a></li>
+            <li><a class="md-popup-link" href="../_knowledge/compliance-frameworks/sox.md">sox.md</a></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel" id="inception">
+      <h2>L1.3: Inception Phase</h2>
+      <p class="muted">Terminology: Workspace Detection, Requirements Analysis, User Stories, Workflow Planning, Application Design, Units Generation</p>
+      <div class="grid">
+        <article class="step">
+          <span class="term">L2.2: Workspace Detection</span>
+          <ul class="item-list">
+            <li><a class="md-popup-link" href="aidlc-state.md">State</a></li>
+            <li><a class="md-popup-link" href="audit.md">Audit</a></li>
+          </ul>
+        </article>
+        <article class="step">
+          <span class="term">L2.3: Requirements Analysis</span>
+          <ul class="item-list">
+            <li><a class="md-popup-link" href="inception/plans/requirements-analysis-plan.md">Plan</a></li>
+            <li><a class="md-popup-link" href="inception/requirements/requirements.md">Result</a></li>
+            <li><a class="md-popup-link" href="inception/requirements/requirement-verification-questions.md">Q&amp;A 1</a></li>
+            <li><a class="md-popup-link" href="inception/requirements/requirement-verification-clarification-questions.md">Q&amp;A 2</a></li>
+          </ul>
+        </article>
+        <article class="step">
+          <span class="term">L2.4: User Stories</span>
+          <ul class="item-list">
+            <li><a class="md-popup-link" href="inception/plans/user-stories-assessment.md">Plan</a></li>
+            <li><a class="md-popup-link" href="inception/plans/story-generation-plan.md">Generation Plan</a></li>
+            <li><a class="md-popup-link" href="inception/user-stories/personas.md">Personas</a></li>
+            <li><a class="md-popup-link" href="inception/user-stories/stories.md">Stories</a></li>
+          </ul>
+        </article>
+        <article class="step">
+          <span class="term">L2.5: Workflow Planning</span>
+          <ul class="item-list">
+            <li><a class="md-popup-link" href="inception/plans/workflow-planning-plan.md">Plan</a></li>
+            <li><a class="md-popup-link" href="inception/plans/execution-plan.md">Execution Plan</a></li>
+          </ul>
+        </article>
+        <article class="step">
+          <span class="term">L2.6: Application Design</span>
+          <ul class="item-list">
+            <li><a class="md-popup-link" href="inception/plans/application-design-plan.md">Plan</a></li>
+            <li><a class="md-popup-link" href="inception/application-design/application-design.md">Overview</a></li>
+            <li><a class="md-popup-link" href="inception/application-design/components.md">Components</a></li>
+            <li><a class="md-popup-link" href="inception/application-design/services.md">Services</a></li>
+          </ul>
+        </article>
+        <article class="step">
+          <span class="term">L2.7: Units Generation</span>
+          <ul class="item-list">
+            <li><a class="md-popup-link" href="inception/plans/unit-of-work-plan.md">Plan</a></li>
+            <li><a class="md-popup-link" href="inception/application-design/unit-of-work.md">UOWs</a></li>
+            <li><a class="md-popup-link" href="inception/application-design/unit-of-work-dependency.md">Dependencies</a></li>
+            <li><a class="md-popup-link" href="inception/application-design/unit-of-work-story-map.md">Story Map</a></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel" id="construction">
+      <h2>L1.4: Construction Phase</h2>
+      <p class="muted">Terminology: Functional Design, NFR Requirements, NFR Design, Infrastructure Design, Code Generation, Build and Test</p>
+      <div class="grid">
+        <article class="step">
+          <span class="term">L2.8: UOW-01 Foundation</span>
+          <ul class="item-list">
+            <li><a class="md-popup-link" href="construction/plans/uow-01-functional-design-plan.md">Plan Set</a></li>
+            <li><a class="md-popup-link" href="construction/uow-01-foundation/functional-design/business-logic-model.md">Functional</a></li>
+            <li><a class="md-popup-link" href="construction/uow-01-foundation/nfr-requirements/nfr-requirements.md">NFR Req</a></li>
+            <li><a class="md-popup-link" href="construction/uow-01-foundation/nfr-design/nfr-design-patterns.md">NFR Design</a></li>
+            <li><a class="md-popup-link" href="construction/uow-01-foundation/infrastructure-design/infrastructure-design.md">Infra</a></li>
+            <li><a class="md-popup-link" href="construction/uow-01-foundation/code/code-generation-summary.md">Code Result</a></li>
+          </ul>
+        </article>
+        <article class="step">
+          <span class="term">L2.9: UOW-02 Core Security</span>
+          <ul class="item-list">
+            <li><a class="md-popup-link" href="construction/plans/uow-02-functional-design-plan.md">Plan Set</a></li>
+            <li><a class="md-popup-link" href="construction/uow-02-core-security/functional-design/business-logic-model.md">Functional</a></li>
+            <li><a class="md-popup-link" href="construction/uow-02-core-security/nfr-requirements/nfr-requirements.md">NFR Req</a></li>
+            <li><a class="md-popup-link" href="construction/uow-02-core-security/nfr-design/nfr-design-patterns.md">NFR Design</a></li>
+            <li><a class="md-popup-link" href="construction/uow-02-core-security/infrastructure-design/infrastructure-design.md">Infra</a></li>
+            <li><a class="md-popup-link" href="construction/uow-02-core-security/code/code-generation-summary.md">Code Result</a></li>
+          </ul>
+        </article>
+        <article class="step">
+          <span class="term">L2.10: UOW-03 Governance</span>
+          <ul class="item-list">
+            <li><a class="md-popup-link" href="construction/plans/uow-03-functional-design-plan.md">Plan Set</a></li>
+            <li><a class="md-popup-link" href="construction/uow-03-governance/functional-design/business-logic-model.md">Functional</a></li>
+            <li><a class="md-popup-link" href="construction/uow-03-governance/nfr-requirements/nfr-requirements.md">NFR Req</a></li>
+            <li><a class="md-popup-link" href="construction/uow-03-governance/nfr-design/nfr-design-patterns.md">NFR Design</a></li>
+            <li><a class="md-popup-link" href="construction/uow-03-governance/infrastructure-design/infrastructure-design.md">Infra</a></li>
+            <li><a class="md-popup-link" href="construction/uow-03-governance/code/code-generation-summary.md">Code Result</a></li>
+          </ul>
+        </article>
+        <article class="step">
+          <span class="term">L2.11: UOW-04 Integration Readiness</span>
+          <ul class="item-list">
+            <li><a class="md-popup-link" href="construction/plans/uow-04-functional-design-plan.md">Plan Set</a></li>
+            <li><a class="md-popup-link" href="construction/uow-04-integration-readiness/functional-design/business-logic-model.md">Functional</a></li>
+            <li><a class="md-popup-link" href="construction/uow-04-integration-readiness/nfr-requirements/nfr-requirements.md">NFR Req</a></li>
+            <li><a class="md-popup-link" href="construction/uow-04-integration-readiness/nfr-design/nfr-design-patterns.md">NFR Design</a></li>
+            <li><a class="md-popup-link" href="construction/uow-04-integration-readiness/infrastructure-design/infrastructure-design.md">Infra</a></li>
+            <li><a class="md-popup-link" href="construction/uow-04-integration-readiness/code/code-generation-summary.md">Code Result</a></li>
+          </ul>
+        </article>
+        <article class="step">
+          <span class="term">L2.12: Build and Test</span>
+          <ul class="item-list">
+            <li><a class="md-popup-link" href="construction/build-and-test/build-and-test-summary.md">Summary</a></li>
+            <li><a class="md-popup-link" href="construction/build-and-test/build-instructions.md">Build</a></li>
+            <li><a class="md-popup-link" href="construction/build-and-test/unit-test-instructions.md">Unit Test</a></li>
+            <li><a class="md-popup-link" href="construction/build-and-test/integration-test-instructions.md">Integration Test</a></li>
+            <li><a class="md-popup-link" href="construction/build-and-test/performance-test-instructions.md">Performance Test</a></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel" id="operations">
+      <h2>L1.5: Operations Phase</h2>
+      <p class="muted">Terminology: Placeholder (deployment and runbook workflows to be expanded).</p>
+      <div class="grid">
+        <article class="step">
+          <span class="term">L2.13: Current Status and Trace</span>
+          <ul class="item-list">
+            <li><a class="md-popup-link" href="aidlc-state.md">AI-DLC State</a></li>
+            <li><a class="md-popup-link" href="audit.md">Audit Timeline</a></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel" id="architecture">
+      <h2>L1.6: Detailed Architecture (Mermaid)</h2>
+      <p class="muted">Runtime host, module boundaries, data stores, secrets, ports, and verification artefacts.</p>
+      <div class="mermaid-wrap">
+        <pre class="mermaid">
+flowchart LR
+  subgraph DevHost["Developer Machine"]
+    BR["Browser / API Client"]
+    subgraph Compose["Docker Compose Runtime"]
+      API["auth-module-api container\nPort 8080"]
+      subgraph ServiceHost["ServiceHost (src/AuthModule/ServiceHost)"]
+        P["Program.cs\nConfiguration + DI + endpoint map"]
+        FE["Foundation Diagnostics\n/internal/foundation/*"]
+        CE["Core Security APIs\n/api/core-security/*"]
+        GE["Governance APIs\n/api/governance/*"]
+        IE["Integration Gate APIs\n/api/integration/*"]
+      end
+      BK["backup-scheduler container\nHourly backup loop"]
+      VOL["foundation-data volume\n(/data)"]
+      CFG["config mount\n/config/policy.template.json"]
+      SEC["secrets mount\n/run/secrets/{encryption-key,hmac-key}"]
+      SCRIPTS["scripts mount\n/scripts/backup.sh"]
+      BAK["backups folder\n/backups/*.tar.gz"]
+    end
+  end
+
+  BR -->|"HTTP :8080"| API
+  API -->|"loads policy"| CFG
+  API -->|"reads crypto keys"| SEC
+  API -->|"writes encrypted JSON stores + signatures"| VOL
+  BK -->|"reads /data"| VOL
+  BK -->|"executes"| SCRIPTS
+  BK -->|"writes archives"| BAK
+
+  API --> P
+  P --> FE
+  P --> CE
+  P --> GE
+  P --> IE
+
+  subgraph Modules["Main Code Modules"]
+    FND["Foundation\nStorage + crypto + integrity + telemetry"]
+    CRS["CoreSecurity\nAuth/AuthZ/MFA/User admin"]
+    GOV["Governance\nEvidence, retention, incidents, DSR"]
+    INT["Integration\nConformance + traceability + gate"]
+  end
+
+  P --> FND
+  P --> CRS
+  P --> GOV
+  P --> INT
+
+  subgraph Tests["Validation Artefacts"]
+    T1["tests/AuthModule.Foundation.Tests"]
+    T2["tests/AuthModule.CoreSecurity.Tests"]
+    T3["tests/AuthModule.Governance.Tests"]
+    T4["tests/AuthModule.Integration.Tests"]
+    BT["aidlc-docs/construction/build-and-test/*"]
+  end
+
+  T1 --> FND
+  T2 --> CRS
+  T3 --> GOV
+  T4 --> INT
+  BT --> T1
+  BT --> T2
+  BT --> T3
+  BT --> T4
+        </pre>
+      </div>
+      <p class="link-grid-header">🔗 API &amp; Live Service</p>
+      <div class="link-grid">
+        <a class="link-card" href="http://localhost:8080/docs" target="_blank">
+          <span class="lc-label">Browser UI</span>
+          <span class="lc-title">Swagger UI</span>
+          <span class="lc-desc">Interactive API explorer (requires running service)</span>
+        </a>
+        <a class="link-card" href="http://localhost:8080/openapi/v1.json" target="_blank">
+          <span class="lc-label">OpenAPI Spec</span>
+          <span class="lc-title">openapi/v1.json</span>
+          <span class="lc-desc">Raw OpenAPI 3.0 JSON specification</span>
+        </a>
+        <a class="link-card" href="http://localhost:8080/health" target="_blank">
+          <span class="lc-label">Endpoint</span>
+          <span class="lc-title">Health Check</span>
+          <span class="lc-desc">GET /health — service liveness probe</span>
+        </a>
+      </div>
+      <p class="link-grid-header">📁 Key Project Files</p>
+      <div class="link-grid">
+        <a class="link-card" href="../src/AuthModule/ServiceHost/Program.cs">
+          <span class="lc-label">Entry Point</span>
+          <span class="lc-title">ServiceHost/Program.cs</span>
+          <span class="lc-desc">All modules wired, config loader, OpenAPI, /docs</span>
+        </a>
+        <a class="link-card" href="../docker-compose.yml">
+          <span class="lc-label">Runtime</span>
+          <span class="lc-title">docker-compose.yml</span>
+          <span class="lc-desc">auth-module-api + backup-scheduler services</span>
+        </a>
+        <a class="link-card" href="../config/policy.local.json">
+          <span class="lc-label">Config</span>
+          <span class="lc-title">policy.local.json</span>
+          <span class="lc-desc">Dev-mode policy (local paths for secrets &amp; data)</span>
+        </a>
+        <a class="link-card" href="../src/AuthModule/Foundation/Foundation.csproj">
+          <span class="lc-label">UOW-01</span>
+          <span class="lc-title">Foundation.csproj</span>
+          <span class="lc-desc">Storage, crypto, integrity, telemetry</span>
+        </a>
+        <a class="link-card" href="../src/AuthModule/CoreSecurity/CoreSecurity.csproj">
+          <span class="lc-label">UOW-02</span>
+          <span class="lc-title">CoreSecurity.csproj</span>
+          <span class="lc-desc">Auth, authZ, MFA, user admin</span>
+        </a>
+        <a class="link-card" href="../src/AuthModule/Governance/Governance.csproj">
+          <span class="lc-label">UOW-03</span>
+          <span class="lc-title">Governance.csproj</span>
+          <span class="lc-desc">Evidence, retention, incidents, DSR</span>
+        </a>
+        <a class="link-card" href="../src/AuthModule/Integration/Integration.csproj">
+          <span class="lc-label">UOW-04</span>
+          <span class="lc-title">Integration.csproj</span>
+          <span class="lc-desc">Conformance, traceability, gate</span>
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal" id="mdModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="mdModalTitle">
+      <div class="modal-header">
+        <h3 class="modal-title" id="mdModalTitle">Document</h3>
+        <button class="close-btn" id="closeModalBtn" type="button">Close</button>
+      </div>
+      <div class="md-content" id="mdModalContent">Loading...</div>
+      <p class="hint" id="mdModalHint"></p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: "dark" });
+
+    const modal = document.getElementById("mdModal");
+    const titleEl = document.getElementById("mdModalTitle");
+    const contentEl = document.getElementById("mdModalContent");
+    const hintEl = document.getElementById("mdModalHint");
+    const closeBtn = document.getElementById("closeModalBtn");
+
+    function closeModal() {
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+    }
+
+    async function openMarkdown(link) {
+      const href = link.getAttribute("href");
+      titleEl.textContent = link.textContent.trim();
+      contentEl.innerHTML = "Loading...";
+      hintEl.textContent = "";
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+
+      try {
+        const response = await fetch(href);
+        if (!response.ok) {
+          throw new Error(`Unable to load ${href}`);
+        }
+
+        const markdown = await response.text();
+        contentEl.innerHTML = marked.parse(markdown);
+      } catch (error) {
+        contentEl.innerHTML = `<p>Could not load <code>${href}</code>.</p>`;
+        hintEl.textContent =
+          "If you opened this file directly via file:// and content is blocked, run a local web server (for example: python3 -m http.server) and open the page through http://localhost.";
+      }
+    }
+
+    document.querySelectorAll(".md-popup-link").forEach((link) => {
+      const href = link.getAttribute("href");
+      const label = link.textContent.trim();
+      const li = link.closest("li");
+      if (!li || !href) return;
+
+      li.innerHTML = "";
+      const pair = document.createElement("span");
+      pair.className = "item-pair";
+
+      const labelNode = document.createElement("span");
+      labelNode.className = "label";
+      labelNode.textContent = `${label} `;
+
+      const mdLink = document.createElement("a");
+      mdLink.href = href;
+      mdLink.className = "md-popup-link mode";
+      mdLink.textContent = "[md]";
+
+      const rawLink = document.createElement("a");
+      rawLink.href = href;
+      rawLink.className = "mode";
+      rawLink.textContent = "[raw]";
+      rawLink.target = "_blank";
+      rawLink.rel = "noopener noreferrer";
+
+      pair.appendChild(labelNode);
+      pair.appendChild(mdLink);
+      pair.appendChild(rawLink);
+      li.appendChild(pair);
+    });
+
+    document.querySelectorAll(".md-popup-link").forEach((link) => {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        openMarkdown(link);
+      });
+    });
+
+    closeBtn.addEventListener("click", closeModal);
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeModal();
+      }
+    });
+  </script>
+</body>
+</html>

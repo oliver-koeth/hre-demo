@@ -10,13 +10,17 @@ public static class DiagnosticsEndpoints
 {
     public static IEndpointRouteBuilder MapFoundationDiagnostics(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/internal/foundation");
+        var group = app.MapGroup("/internal/foundation")
+            .WithTags("Foundation Diagnostics");
 
         group.MapGet("/health", () => Results.Ok(new
         {
             Status = "Healthy",
             Timestamp = DateTimeOffset.UtcNow,
-        }));
+        }))
+        .WithName("GetFoundationHealth")
+        .WithSummary("Gets the foundation health status.")
+        .WithDescription("Returns a lightweight health signal and timestamp for the foundation runtime.");
 
         group.MapGet(
             "/integrity",
@@ -25,9 +29,11 @@ public static class DiagnosticsEndpoints
                 var context = RequestContext.CreateAnonymous(httpContext.Connection.RemoteIpAddress?.ToString());
                 var result = await integrityService.VerifyAllStoresAsync(context);
                 return Results.Ok(result);
-            });
+            })
+            .WithName("VerifyFoundationStoreIntegrity")
+            .WithSummary("Verifies integrity of all configured JSON stores.")
+            .WithDescription("Runs integrity checks on persisted stores and reports signature/hash verification results.");
 
         return app;
     }
 }
-

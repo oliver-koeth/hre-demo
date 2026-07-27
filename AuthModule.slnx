@@ -5,6 +5,7 @@
     <Project Path="src/AuthModule/CoreSecurity/CoreSecurity.csproj" />
     <Project Path="src/AuthModule/Governance/Governance.csproj" />
     <Project Path="src/AuthModule/Integration/Integration.csproj" />
+    <Project Path="src/AuthModule/ServiceHost/ServiceHost.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/AuthModule.Foundation.Tests/AuthModule.Foundation.Tests.csproj" />

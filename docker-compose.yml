@@ -1,10 +1,10 @@
 services:
-  auth-module-foundation:
+  auth-module-api:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: auth-module-foundation
-    command: ["dotnet", "--info"]
+    container_name: auth-module-api
+    command: ["dotnet", "run", "--no-launch-profile", "--project", "src/AuthModule/ServiceHost/ServiceHost.csproj", "--urls", "http://0.0.0.0:8080"]
     restart: "no"
     networks:
       - foundation-internal
@@ -14,64 +14,8 @@ services:
       - ./secrets:/run/secrets:ro
     environment:
       - POLICY_CONFIG_PATH=/config/policy.template.json
-    ports: []
-
-  auth-module-core-security:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: auth-module-core-security
-    command: ["dotnet", "--info"]
-    restart: "no"
-    depends_on:
-      - auth-module-foundation
-    networks:
-      - foundation-internal
-    volumes:
-      - foundation-data:/data
-      - ./config:/config:ro
-      - ./secrets:/run/secrets:ro
-    environment:
-      - POLICY_CONFIG_PATH=/config/policy.template.json
-    ports: []
-
-  auth-module-governance:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: auth-module-governance
-    command: ["dotnet", "--info"]
-    restart: "no"
-    depends_on:
-      - auth-module-core-security
-    networks:
-      - foundation-internal
-    volumes:
-      - foundation-data:/data
-      - ./config:/config:ro
-      - ./secrets:/run/secrets:ro
-    environment:
-      - POLICY_CONFIG_PATH=/config/policy.template.json
-    ports: []
-
-  auth-module-integration:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: auth-module-integration
-    command: ["dotnet", "--info"]
-    restart: "no"
-    depends_on:
-      - auth-module-governance
-    networks:
-      - foundation-internal
-    volumes:
-      - foundation-data:/data
-      - ./config:/config:ro
-      - ./secrets:/run/secrets:ro
-    environment:
-      - POLICY_CONFIG_PATH=/config/policy.template.json
-    ports: []
+    ports:
+      - "8080:8080"
 
   backup-scheduler:
     image: alpine:3.20.3
@@ -79,7 +23,7 @@ services:
     command: ["/bin/sh", "-c", "while true; do /scripts/backup.sh; sleep 3600; done"]
     restart: "no"
     depends_on:
-      - auth-module-foundation
+      - auth-module-api
     networks:
       - foundation-internal
     volumes:
@@ -90,7 +34,6 @@ services:
 networks:
   foundation-internal:
     driver: bridge
-    internal: true
 
 volumes:
   foundation-data:

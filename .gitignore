@@ -3,3 +3,6 @@
 **/bin/
 **/obj/
 **/TestResults/
+secrets/*
+!secrets/.gitkeep
+data/

@@ -1,9 +1,11 @@
 # Integration Test Instructions
 
 ## Purpose
-Validate interaction boundaries across units (Foundation, CoreSecurity, Governance, Integration Gate) and ensure cross-unit contracts remain consistent.
+Validate interaction boundaries across units (Foundation, CoreSecurity, Governance, Integration Gate) and ensure cross-unit contracts remain consistent. Also validates the full HTTP API surface via in-process integration tests.
 
-## Test Scenarios
+## Part 1: Cross-Unit / Gate Tests
+
+These tests run in-process without Docker and validate RFC7807 contract conformance, integration gate readiness decisions, and traceability coverage.
 
 ### Scenario 1: CoreSecurity ↔ Governance error-contract consistency
 - **Description**: Validate RFC7807 + `errorCode` + `correlationId` behavior across cross-unit API surfaces.
@@ -23,31 +25,41 @@ Validate interaction boundaries across units (Foundation, CoreSecurity, Governan
 - **Expected Results**: deterministic outcomes for unchanged inputs; fail-fast on blockers.
 - **Cleanup**: none.
 
-## Setup Integration Test Environment
-
-### 1. Start Required Services (optional runtime validation)
-```bash
-docker-compose up -d auth-module-foundation auth-module-core-security auth-module-governance auth-module-integration
-```
-
-### 2. Configure Endpoints
-```bash
-export POLICY_CONFIG_PATH=config/policy.template.json
-```
-
-## Run Integration Tests
-
-### 1. Execute Integration Test Suite
+### Run Cross-Unit / Gate Tests
 ```bash
 dotnet test tests/AuthModule.Integration.Tests/AuthModule.Integration.Tests.csproj --nologo
 ```
 
-### 2. Verify Service Interactions
-- **Scenarios covered**: conformance checks, traceability checks, artifact checks, gate decision persistence
-- **Expected Results**: all integration tests pass
-- **Logs Location**: test runner output and `tests/**/TestResults/` when available
+---
 
-### 3. Cleanup
+## Part 2: HTTP Integration Tests (WebApplicationFactory)
+
+These tests start the full `ServiceHost` in-process using `WebApplicationFactory<Program>` and exercise every API endpoint over real HTTP using `HttpClient`. No Docker or external services are required — each test class gets its own isolated temp directory with generated AES/HMAC keys.
+
+### Coverage
+| Test class | Endpoints covered |
+|---|---|
+| `ServiceStatusTests` | `GET /` — service status |
+| `FoundationDiagnosticsTests` | `GET /api/health`, `POST /api/governance/integrity` |
+| `OpenApiTests` | `GET /openapi/v1.json`, `GET /docs`, CORS preflight |
+| `AuthenticationTests` | `POST /api/auth/login` (bad credentials, non-existent user, malformed token, lockout) |
+| `AuthorizationTests` | `POST /api/authz/evaluate` |
+| `MfaTests` | `POST /api/mfa/challenge`, `POST /api/mfa/verify` |
+| `UserAdminTests` | `POST /api/users`, `PUT /api/users/{id}`, `POST /api/users/{id}/disable` |
+| `GovernanceTests` | `GET /api/governance/audit/security-events`, `POST /api/governance/evidence`, `POST /api/governance/evidence/export`, `POST /api/governance/incidents`, `PUT /api/governance/incidents/{id}/status`, `POST /api/governance/backups/metadata`, `PUT /api/governance/backups/{id}/status` |
+
+### Run HTTP Integration Tests
 ```bash
-docker-compose down
+dotnet test tests/AuthModule.ServiceHost.Tests/AuthModule.ServiceHost.Tests.csproj --nologo
 ```
+
+### Run All Integration Tests
+```bash
+dotnet test tests/AuthModule.Integration.Tests/ tests/AuthModule.ServiceHost.Tests/ --nologo
+```
+
+### Test Isolation
+- Each `IClassFixture<ServiceHostFactory>` creates its own `TestPolicyConfig` with a unique temp directory and generated AES/HMAC keys.
+- Host initialization is serialized with a `SemaphoreSlim` so parallel test classes don't race on environment variable injection.
+- Temp directories are deleted in `DisposeAsync`.
+

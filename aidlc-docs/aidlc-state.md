@@ -67,6 +67,7 @@
 - [ ] Infrastructure Design (per-unit, TBD)
 - [ ] Code Generation (per-unit)
 - [x] Build and Test approved
+- [x] HTTP Integration Tests added — `AuthModule.ServiceHost.Tests` (25 test cases, WebApplicationFactory, all passing)
 
 ### 🟡 OPERATIONS PHASE
 - [x] Operations (Placeholder - acknowledged)

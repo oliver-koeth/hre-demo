@@ -6,3 +6,6 @@
 secrets/*
 !secrets/.gitkeep
 data/
+
+# graphify-axet
+.graphify/

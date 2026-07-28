@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using AuthModule.CoreSecurity.Api;
 using AuthModule.CoreSecurity.Bootstrap;
 using AuthModule.CoreSecurity.Configuration;
@@ -14,8 +15,22 @@ using AuthModule.Integration.Configuration;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-var configurationPath = ResolvePolicyConfigurationPath(builder.Environment.ContentRootPath);
+var configurationPath = ResolvePolicyConfigurationPath(builder.Environment.ContentRootPath, builder.Configuration);
 var runtimeConfiguration = RuntimeConfigurationLoader.Load(configurationPath);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("LocalTestingCors", policy =>
+    {
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+builder.Services.ConfigureHttpJsonOptions(opts =>
+    opts.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -41,6 +56,7 @@ builder.Services.AddIntegrationServices(new IntegrationConfiguration
 
 var app = builder.Build();
 
+app.UseCors("LocalTestingCors");
 app.UseSwagger(options => options.RouteTemplate = "openapi/{documentName}.json");
 
 app.MapGet("/", () => Results.Ok(new ServiceStatusResponse("auth-module", "Running", configurationPath)))
@@ -59,9 +75,10 @@ app.MapIntegrationEndpoints();
 
 app.Run();
 
-static string ResolvePolicyConfigurationPath(string contentRootPath)
+static string ResolvePolicyConfigurationPath(string contentRootPath, IConfiguration? config = null)
 {
-    var configuredPath = Environment.GetEnvironmentVariable("POLICY_CONFIG_PATH");
+    // IConfiguration takes precedence (allows per-instance override in tests without process-level env var races).
+    var configuredPath = config?["POLICY_CONFIG_PATH"] ?? Environment.GetEnvironmentVariable("POLICY_CONFIG_PATH");
     if (!string.IsNullOrWhiteSpace(configuredPath))
     {
         var candidatePaths = new List<string>();
@@ -257,3 +274,6 @@ file static class DocumentationAssets
 </html>
 """;
 }
+
+// Required for WebApplicationFactory<Program> in integration tests
+public partial class Program { }

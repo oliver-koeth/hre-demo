@@ -12,5 +12,6 @@
     <Project Path="tests/AuthModule.CoreSecurity.Tests/AuthModule.CoreSecurity.Tests.csproj" />
     <Project Path="tests/AuthModule.Governance.Tests/AuthModule.Governance.Tests.csproj" />
     <Project Path="tests/AuthModule.Integration.Tests/AuthModule.Integration.Tests.csproj" />
+    <Project Path="tests/AuthModule.ServiceHost.Tests/AuthModule.ServiceHost.Tests.csproj" />
   </Folder>
 </Solution>

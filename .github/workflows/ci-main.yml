@@ -1,0 +1,48 @@
+name: CI Main
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-test-compliance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore AuthModule.slnx --nologo
+
+      - name: Build
+        run: dotnet build AuthModule.slnx --configuration Release --no-restore --nologo
+
+      - name: Unit tests - Foundation
+        run: dotnet test tests/AuthModule.Foundation.Tests/AuthModule.Foundation.Tests.csproj --configuration Release --no-build --nologo
+
+      - name: Unit tests - CoreSecurity
+        run: dotnet test tests/AuthModule.CoreSecurity.Tests/AuthModule.CoreSecurity.Tests.csproj --configuration Release --no-build --nologo
+
+      - name: Unit tests - Governance
+        run: dotnet test tests/AuthModule.Governance.Tests/AuthModule.Governance.Tests.csproj --configuration Release --no-build --nologo
+
+      - name: Property-based tests
+        run: dotnet test tests/AuthModule.Integration.Tests/AuthModule.Integration.Tests.csproj --configuration Release --no-build --filter "FullyQualifiedName~PropertyBased" --nologo
+
+      - name: Compliance checks - Contract conformance
+        run: dotnet test tests/AuthModule.Integration.Tests/AuthModule.Integration.Tests.csproj --configuration Release --no-build --filter "FullyQualifiedName~Conformance" --nologo
+
+      - name: Compliance checks - Traceability and gate readiness
+        run: dotnet test tests/AuthModule.Integration.Tests/AuthModule.Integration.Tests.csproj --configuration Release --no-build --filter "FullyQualifiedName~Gate" --nologo
+
+      - name: HTTP integration tests
+        run: dotnet test tests/AuthModule.ServiceHost.Tests/AuthModule.ServiceHost.Tests.csproj --configuration Release --no-build --nologo

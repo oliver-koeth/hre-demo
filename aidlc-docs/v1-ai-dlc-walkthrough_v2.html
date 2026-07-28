@@ -1,0 +1,1292 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI-DLC V2 Client Walkthrough</title>
+  <style>
+    :root {
+      --bg: #080b12;
+      --surface: #101623;
+      --surface-2: #151d2d;
+      --surface-3: #1c2638;
+      --line: #2b3548;
+      --line-soft: rgba(255,255,255,.08);
+      --text: #edf2ff;
+      --muted: #9aa7bb;
+      --quiet: #6f7a8f;
+      --blue: #7fb3ff;
+      --cyan: #7ef1df;
+      --green: #8ee6a8;
+      --amber: #ffd078;
+      --rose: #ff9aa8;
+      --shadow: 0 20px 70px rgba(0,0,0,.38);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 20% 0%, rgba(127,179,255,.15), transparent 30%),
+        linear-gradient(180deg, #080b12 0%, #0b0f18 42%, #090c13 100%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    p { margin: 0; }
+    h1, h2, h3 { margin: 0; line-height: 1.12; letter-spacing: 0; }
+    h1 { font-size: clamp(2.1rem, 5vw, 5.4rem); max-width: 1050px; }
+    h2 { font-size: clamp(1.7rem, 3vw, 3rem); }
+    h3 { font-size: 1.05rem; }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .rail {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 22px 18px;
+      border-right: 1px solid var(--line);
+      background: rgba(9, 13, 20, .86);
+      backdrop-filter: blur(18px);
+      overflow: auto;
+    }
+
+    .brand {
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.03);
+      margin-bottom: 18px;
+    }
+
+    .brand-label {
+      color: var(--cyan);
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .brand-title { font-weight: 700; }
+    .brand-subtitle { color: var(--muted); font-size: .86rem; }
+
+    .nav {
+      display: grid;
+      gap: 6px;
+    }
+
+    .nav a {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 10px;
+      color: var(--muted);
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      font-size: .9rem;
+      text-decoration: none;
+    }
+
+    .nav a::before {
+      content: attr(data-step);
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      color: var(--quiet);
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      font-size: .72rem;
+    }
+
+    .nav a.active,
+    .nav a:hover {
+      color: var(--text);
+      background: rgba(127,179,255,.08);
+      border-color: rgba(127,179,255,.24);
+      text-decoration: none;
+    }
+
+    .nav a.active::before {
+      color: #061016;
+      background: var(--cyan);
+      border-color: var(--cyan);
+      font-weight: 800;
+    }
+
+    .content {
+      min-width: 0;
+    }
+
+    .hero {
+      min-height: 92vh;
+      display: grid;
+      align-content: end;
+      padding: 56px clamp(22px, 5vw, 76px) 34px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      width: fit-content;
+      margin-bottom: 18px;
+      padding: 7px 10px;
+      border: 1px solid rgba(126,241,223,.45);
+      border-radius: var(--radius);
+      color: var(--cyan);
+      background: rgba(126,241,223,.07);
+      font-size: .78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .hero-copy {
+      max-width: 890px;
+      margin-top: 22px;
+      color: #c8d2e5;
+      font-size: clamp(1.05rem, 1.7vw, 1.34rem);
+    }
+
+    .hero-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      margin-top: 46px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .metric {
+      padding: 18px;
+      background: rgba(16,22,35,.94);
+    }
+
+    .metric strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--text);
+      font-size: 1.35rem;
+    }
+
+    .metric span { color: var(--muted); font-size: .88rem; }
+
+    section {
+      padding: 70px clamp(22px, 5vw, 76px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 760px) minmax(220px, 360px);
+      gap: 36px;
+      align-items: end;
+      margin-bottom: 28px;
+    }
+
+    .section-kicker {
+      color: var(--cyan);
+      font-size: .78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 10px;
+    }
+
+    .section-summary {
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .card {
+      grid-column: span 4;
+      min-height: 100%;
+      min-width: 0;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.018));
+    }
+
+    .card.wide { grid-column: span 8; }
+    .card.full { grid-column: 1 / -1; }
+    .card.half { grid-column: span 6; }
+
+    .card h3 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 18px rgba(126,241,223,.75);
+      flex: 0 0 auto;
+    }
+
+    .card p,
+    .card li { color: var(--muted); font-size: .95rem; }
+
+    ul.clean {
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    ul.clean li {
+      padding-left: 16px;
+      position: relative;
+      min-width: 0;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+    }
+
+    ul.clean li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: .68em;
+      width: 6px;
+      height: 1px;
+      background: var(--cyan);
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--line);
+      gap: 1px;
+    }
+
+    .phase {
+      padding: 20px;
+      background: var(--surface);
+    }
+
+    .phase small {
+      display: block;
+      color: var(--cyan);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 8px;
+    }
+
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: #cbd6eb;
+      background: rgba(255,255,255,.035);
+      font-size: .82rem;
+      white-space: nowrap;
+    }
+
+    a.pill:hover {
+      text-decoration: none;
+      border-color: rgba(127,179,255,.72);
+      color: var(--text);
+    }
+
+    .pill.must { border-color: rgba(126,241,223,.45); color: var(--cyan); }
+    .pill.gate { border-color: rgba(255,208,120,.45); color: var(--amber); }
+
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .legend-item {
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.025);
+    }
+
+    .legend-item strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: .86rem;
+    }
+
+    .legend-item span {
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    .legend-cyan strong { color: var(--cyan); }
+    .legend-amber strong { color: var(--amber); }
+    .legend-muted strong { color: #cbd6eb; }
+    .legend-link strong { color: var(--blue); }
+
+    details {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.025);
+      overflow: hidden;
+    }
+
+    details + details { margin-top: 10px; }
+    summary {
+      cursor: pointer;
+      padding: 14px 16px;
+      color: var(--text);
+      font-weight: 700;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker { display: none; }
+    summary::after {
+      content: "+";
+      float: right;
+      color: var(--cyan);
+      font-size: 1.1rem;
+    }
+
+    details[open] summary::after { content: "-"; }
+
+    .detail-body {
+      padding: 0 16px 16px;
+      color: var(--muted);
+    }
+
+    .artifact-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .artifact {
+      display: grid;
+      gap: 3px;
+      min-height: 74px;
+      padding: 12px;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: rgba(0,0,0,.15);
+    }
+
+    .artifact strong { color: var(--text); font-size: .9rem; }
+    .artifact span { color: var(--quiet); font-size: .8rem; }
+    .artifact .modes { display: flex; gap: 8px; font-size: .82rem; }
+
+    .table {
+      width: 100%;
+      max-width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      font-size: .92rem;
+    }
+
+    .table th,
+    .table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      overflow-wrap: anywhere;
+    }
+
+    .table th {
+      color: var(--text);
+      background: rgba(255,255,255,.045);
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .table td { color: var(--muted); }
+    .table tr:last-child td { border-bottom: 0; }
+
+    .stage-map {
+      display: grid;
+      gap: 12px;
+    }
+
+    .stage {
+      display: grid;
+      grid-template-columns: 170px 1fr 1fr;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .stage-name,
+    .stage-cell {
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.028);
+    }
+
+    .stage-name {
+      color: var(--cyan);
+      font-weight: 800;
+    }
+
+    .stage-cell strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--text);
+      font-size: .86rem;
+    }
+
+    .stage-cell span {
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .mermaid-wrap {
+      max-width: 100%;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #0a101c;
+      overflow: auto;
+    }
+
+    .mermaid-wrap pre {
+      margin: 0;
+      max-width: 100%;
+    }
+
+    .callout {
+      padding: 18px;
+      border: 1px solid rgba(126,241,223,.38);
+      border-radius: var(--radius);
+      background: rgba(126,241,223,.06);
+      color: #cdeee8;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(3,6,10,.75);
+      z-index: 1000;
+    }
+
+    .modal.open { display: flex; }
+
+    .modal-card {
+      width: min(1040px, 94vw);
+      max-height: 90vh;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #0d1320;
+      box-shadow: var(--shadow);
+    }
+
+    .modal-header {
+      position: sticky;
+      top: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(13,19,32,.96);
+      z-index: 2;
+    }
+
+    .modal-title { color: var(--cyan); font-size: 1rem; }
+
+    .close-btn {
+      min-height: 34px;
+      padding: 6px 10px;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-3);
+      cursor: pointer;
+    }
+
+    .md-content {
+      padding: 18px;
+      color: #d9e2f3;
+    }
+
+    .md-content h1,
+    .md-content h2,
+    .md-content h3 { color: var(--cyan); margin-top: 18px; }
+    .md-content p,
+    .md-content li { color: #c5d0e3; }
+    .md-content code {
+      padding: 1px 5px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: #070b13;
+    }
+    .md-content pre {
+      padding: 12px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #070b13;
+    }
+
+    .hint {
+      padding: 0 18px 18px;
+      color: var(--quiet);
+      font-size: .9rem;
+    }
+
+    @media (max-width: 1020px) {
+      .shell { grid-template-columns: 1fr; }
+      .rail {
+        position: sticky;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+        z-index: 50;
+      }
+      .brand { margin-bottom: 10px; }
+      .nav {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .nav a { grid-template-columns: 1fr; }
+      .nav a::before { display: none; }
+      .section-head { grid-template-columns: 1fr; }
+      .hero-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .card, .card.wide, .card.half { grid-column: 1 / -1; }
+      .stage { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 620px) {
+      section, .hero { padding-left: 16px; padding-right: 16px; }
+      .nav { grid-template-columns: 1fr 1fr; }
+      .hero-strip, .timeline { grid-template-columns: 1fr; }
+      .legend { grid-template-columns: 1fr; }
+      .table {
+        display: block;
+        overflow-x: auto;
+        font-size: .84rem;
+      }
+      .table thead,
+      .table tbody,
+      .table tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+      }
+      .table th, .table td { padding: 9px; }
+      .artifact-list { grid-template-columns: 1fr; }
+      .pill { white-space: normal; }
+      ul.clean li {
+        display: block;
+        width: 100%;
+      }
+      .mermaid-wrap pre { min-width: 620px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="rail">
+      <div class="brand">
+        <span class="brand-label">AI-DLC walkthrough</span>
+        <span class="brand-title">Authentication Module V1</span>
+        <span class="brand-subtitle">From Copilot coding to governed AI delivery lifecycle.</span>
+      </div>
+      <nav class="nav" aria-label="Walkthrough navigation">
+        <a href="#method" data-step="1">Method</a>
+        <a href="#implementation" data-step="2">GitHub rules</a>
+        <a href="#extensions" data-step="3">Extensions</a>
+        <a href="#tests-build" data-step="4">Tests and build</a>
+        <a href="#traceability" data-step="5">Traceability</a>
+        <a href="#result" data-step="6">Actual result</a>
+        <a href="#decomposition" data-step="7">Decomposition</a>
+        <a href="#architecture" data-step="8">Architecture</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <header class="hero" id="top">
+        <div class="eyebrow">Client narrative</div>
+        <h1>AI-DLC is not better prompting. It is a governed lifecycle around AI-generated software.</h1>
+        <p class="hero-copy">
+          The existing walkthrough is a navigator through the artifacts. This version explains the approach first:
+          AI takes an intent, decomposes it into lifecycle stages, produces auditable artifacts, asks humans to validate
+          the important decisions, and only then turns design into code, tests, runtime, and traceability.
+        </p>
+        <div class="hero-strip" aria-label="Walkthrough facts">
+          <div class="metric"><strong>3 phases</strong><span>Inception, Construction, Operations placeholder</span></div>
+          <div class="metric"><strong>13 stages</strong><span>Adaptive stage plan captured in state</span></div>
+          <div class="metric"><strong>4 units</strong><span>Foundation, Core Security, Governance, Integration</span></div>
+          <div class="metric"><strong>61 tests</strong><span>Unit, property, integration, HTTP, and performance cases</span></div>
+        </div>
+      </header>
+
+      <section id="method" data-section>
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">1. Method</div>
+            <h2>AI-DLC turns intent into a lifecycle, not a chat transcript.</h2>
+          </div>
+          <p class="section-summary">
+            The paper frames AI-DLC as a shift from AI-assisted coding to AI-driven lifecycle orchestration:
+            humans set the intent and validate gates; AI proposes plans, decomposes work, generates artifacts,
+            and carries context forward.
+          </p>
+        </div>
+
+        <div class="grid">
+          <article class="card">
+            <h3><span class="dot"></span>Reimagine, not retrofit</h3>
+            <p>AI-DLC is designed for AI-native iteration cycles measured in hours or days, not a traditional SDLC with a coding assistant added at the end.</p>
+          </article>
+          <article class="card">
+            <h3><span class="dot"></span>Reverse the conversation</h3>
+            <p>The developer does not keep asking for isolated code snippets. AI asks clarifying questions, proposes stage plans, and makes trade-offs explicit for approval.</p>
+          </article>
+          <article class="card">
+            <h3><span class="dot"></span>Design is core</h3>
+            <p>Requirements, stories, domain decomposition, NFR design, architecture, and testing become first-class artifacts, not optional notes around generated code.</p>
+          </article>
+          <article class="card">
+            <h3><span class="dot"></span>Humans validate gates</h3>
+            <p>Human oversight acts as an early correction mechanism: approve, amend, or stop before downstream code and tests cement a wrong assumption.</p>
+          </article>
+          <article class="card">
+            <h3><span class="dot"></span>Artifacts become memory</h3>
+            <p>Every stage persists context in `aidlc-docs`, so the next stage reads approved requirements, stories, designs, and constraints instead of relying on prompt history.</p>
+          </article>
+          <article class="card">
+            <h3><span class="dot"></span>No hard-wired path</h3>
+            <p>Some stages are mandatory; others execute only when the request, complexity, risk, and workspace state make them useful.</p>
+          </article>
+        </div>
+
+        <div style="height:18px"></div>
+        <div class="timeline">
+          <div class="phase">
+            <small>Inception</small>
+            <h3>What and why</h3>
+            <p class="section-summary">Intent, requirements, stories, workflow plan, application design, and units of work.</p>
+            <div class="flow">
+              <a class="pill must" href="https://github.com/oliver-koeth/hre-demo/blob/main/aidlc-docs/aidlc-state.md" target="_blank" rel="noopener noreferrer">Workspace detection</a>
+              <a class="pill must" href="https://github.com/oliver-koeth/hre-demo/tree/main/aidlc-docs/inception/requirements" target="_blank" rel="noopener noreferrer">Requirements</a>
+              <a class="pill" href="https://github.com/oliver-koeth/hre-demo/tree/main/aidlc-docs/inception/user-stories" target="_blank" rel="noopener noreferrer">User stories</a>
+              <a class="pill" href="https://github.com/oliver-koeth/hre-demo/tree/main/aidlc-docs/inception/application-design" target="_blank" rel="noopener noreferrer">Application design</a>
+              <a class="pill" href="https://github.com/oliver-koeth/hre-demo/blob/main/aidlc-docs/inception/application-design/unit-of-work.md" target="_blank" rel="noopener noreferrer">Units</a>
+              <a class="pill gate" href="https://github.com/oliver-koeth/hre-demo/blob/main/aidlc-docs/audit.md" target="_blank" rel="noopener noreferrer">Inception approval gates</a>
+            </div>
+          </div>
+          <div class="phase">
+            <small>Construction</small>
+            <h3>How, build, verify</h3>
+            <p class="section-summary">Functional design, NFR requirements, NFR design, infrastructure design, code generation, build and test.</p>
+            <div class="flow">
+              <a class="pill" href="https://github.com/oliver-koeth/hre-demo/tree/main/aidlc-docs/construction/uow-01-foundation/functional-design" target="_blank" rel="noopener noreferrer">Functional design</a>
+              <a class="pill" href="https://github.com/oliver-koeth/hre-demo/tree/main/aidlc-docs/construction/uow-01-foundation/nfr-requirements" target="_blank" rel="noopener noreferrer">NFR requirements</a>
+              <a class="pill" href="https://github.com/oliver-koeth/hre-demo/tree/main/aidlc-docs/construction/uow-01-foundation/nfr-design" target="_blank" rel="noopener noreferrer">NFR design</a>
+              <a class="pill" href="https://github.com/oliver-koeth/hre-demo/tree/main/aidlc-docs/construction/uow-01-foundation/infrastructure-design" target="_blank" rel="noopener noreferrer">Infrastructure design</a>
+              <a class="pill must" href="https://github.com/oliver-koeth/hre-demo/tree/main/aidlc-docs/construction/uow-01-foundation/code" target="_blank" rel="noopener noreferrer">Code generation</a>
+              <a class="pill must" href="https://github.com/oliver-koeth/hre-demo/tree/main/aidlc-docs/construction/build-and-test" target="_blank" rel="noopener noreferrer">Build and test</a>
+              <a class="pill gate" href="https://github.com/oliver-koeth/hre-demo/blob/main/aidlc-docs/audit.md" target="_blank" rel="noopener noreferrer">Construction approval gates</a>
+            </div>
+          </div>
+          <div class="phase">
+            <small>Operations</small>
+            <h3>Run and improve</h3>
+            <p class="section-summary">In this repository it is acknowledged as a placeholder; the paper describes deployment, telemetry, runbooks, and AI-supported operations.</p>
+            <div class="flow">
+              <span class="pill">Deployment units</span>
+              <span class="pill">Observability</span>
+              <span class="pill">Runbooks</span>
+              <a class="pill gate" href="https://github.com/oliver-koeth/hre-demo/blob/main/aidlc-docs/aidlc-state.md" target="_blank" rel="noopener noreferrer">Operations approval gates</a>
+            </div>
+          </div>
+        </div>
+        <div class="legend" aria-label="Color coding legend">
+          <div class="legend-item legend-cyan">
+            <strong>Cyan</strong>
+            <span>Mandatory or executed AI-DLC steps in this walkthrough.</span>
+          </div>
+          <div class="legend-item legend-muted">
+            <strong>Muted gray</strong>
+            <span>Conditional lifecycle steps or operations concepts that belong to the method.</span>
+          </div>
+          <div class="legend-item legend-amber">
+            <strong>Amber</strong>
+            <span>Human approval gates. Gates exist in Inception, Construction, and Operations.</span>
+          </div>
+          <div class="legend-item legend-link">
+            <strong>Linked labels</strong>
+            <span>When the repo contains a corresponding artifact folder or file, the label opens it on GitHub.</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="implementation" data-section>
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">2. GitHub implementation</div>
+            <h2>In this repo, AI-DLC is enforced through Copilot instructions and rule files.</h2>
+          </div>
+          <p class="section-summary">
+            The mechanism is deliberately simple: `.github/copilot-instructions.md` overrides default software-development behavior,
+            resolves `.aidlc-rule-details`, loads common rules, scans extensions, and writes all lifecycle evidence under `aidlc-docs`.
+          </p>
+        </div>
+
+        <div class="grid">
+          <article class="card wide">
+            <h3><span class="dot"></span>Execution contract for the assistant</h3>
+            <ul class="clean">
+              <li>Always start software development with workspace detection and audit logging.</li>
+              <li>Read the detailed rule file for the current stage before acting.</li>
+              <li>Create stage plans and generated artifacts in the prescribed locations.</li>
+              <li>Wait for explicit human approval at stage gates before continuing.</li>
+              <li>Keep `aidlc-docs/aidlc-state.md`, plan checkboxes, and `aidlc-docs/audit.md` synchronized.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3><span class="dot"></span>Why this matters for Copilot users</h3>
+            <p>Copilot in VS Code can produce code from local context. AI-DLC adds a delivery wrapper: stage discipline, rules, audit, quality gates, and traceability.</p>
+          </article>
+          <article class="card full">
+            <details open>
+              <summary>Key rule and state artifacts</summary>
+              <div class="detail-body">
+                <div class="artifact-list">
+                  <a class="artifact md-popup-link" href="../.github/copilot-instructions.md"><strong>Copilot instructions</strong><span>Lifecycle override, rule loading, extension loading</span></a>
+                  <a class="artifact md-popup-link" href="../.aidlc-rule-details/common/process-overview.md"><strong>Process overview</strong><span>Three-phase lifecycle and adaptive workflow</span></a>
+                  <a class="artifact md-popup-link" href="../.aidlc-rule-details/construction/code-generation.md"><strong>Code generation rules</strong><span>Plan-first generation, code location, approval gates</span></a>
+                  <a class="artifact md-popup-link" href="../.aidlc-rule-details/construction/build-and-test.md"><strong>Build and test rules</strong><span>Build, unit, integration, performance, security test strategy</span></a>
+                  <a class="artifact md-popup-link" href="aidlc-state.md"><strong>AI-DLC state</strong><span>Current stage, extension configuration, stage progress</span></a>
+                  <a class="artifact md-popup-link" href="audit.md"><strong>Audit timeline</strong><span>Raw user inputs, AI responses, approval points</span></a>
+                </div>
+              </div>
+            </details>
+          </article>
+        </div>
+      </section>
+
+      <section id="extensions" data-section>
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">3. Extension mechanism</div>
+            <h2>Extensions make the lifecycle policy-aware without loading every policy all the time.</h2>
+          </div>
+          <p class="section-summary">
+            The instructions scan an `extensions/` directory for lightweight opt-in prompts. Full rules are loaded only when the user opts in.
+            Enabled rules become hard constraints for applicable stages.
+          </p>
+        </div>
+
+        <div class="grid">
+          <article class="card half">
+            <h3><span class="dot"></span>How extension loading works</h3>
+            <ul class="clean">
+              <li>At workflow start, scan extension folders recursively.</li>
+              <li>Load only `*.opt-in.md` prompts initially.</li>
+              <li>Present opt-in choices during requirements analysis.</li>
+              <li>Load the matching full rule file only after opt-in.</li>
+              <li>Record enabled/disabled status in `aidlc-state.md`.</li>
+            </ul>
+          </article>
+          <article class="card half">
+            <h3><span class="dot"></span>What was enabled here</h3>
+            <table class="table" aria-label="Enabled extensions">
+              <thead><tr><th>Extension</th><th>Decision</th><th>Effect</th></tr></thead>
+              <tbody>
+                <tr><td>Security Baseline</td><td>Enabled</td><td>Security-first requirements, secrets, fail-closed controls, auditability.</td></tr>
+                <tr><td>Resiliency Baseline</td><td>Enabled</td><td>RTO/RPO, warm standby, backup, restore, continuity decisions.</td></tr>
+                <tr><td>Property-Based Testing</td><td>Enabled</td><td>Invariant and idempotence tests in downstream stages.</td></tr>
+              </tbody>
+            </table>
+          </article>
+          <article class="card full">
+            <div class="callout">
+              The extension model is the bridge from “developer asks Copilot for code” to “organization governs AI-assisted delivery.”
+              It lets compliance, resilience, security, or domain standards become stage-specific gates instead of after-the-fact reviews.
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="tests-build" data-section>
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">4. Tests and build</div>
+            <h2>Testing is generated as part of the lifecycle, then consolidated by a build-and-test gate.</h2>
+          </div>
+          <p class="section-summary">
+            AI-DLC separates tests by purpose: unit behavior, property/invariant checks, cross-unit conformance, HTTP API integration,
+            executable performance baselines, and future security/continuity testing.
+          </p>
+        </div>
+
+        <div class="grid">
+          <article class="card full">
+            <table class="table" aria-label="Test approach">
+              <thead><tr><th>Type</th><th>Purpose</th><th>Concrete examples</th><th>Test data shape</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>Unit tests</td>
+                  <td>Verify focused domain and persistence behavior.</td>
+                  <td>`Login_ShouldIssueToken_ForValidCredentials`, `Save_With_Stale_Version_Should_Return_Conflict`</td>
+                  <td>Users, roles, permissions, repository records, version metadata.</td>
+                </tr>
+                <tr>
+                  <td>Property-based / invariant tests</td>
+                  <td>Validate repeatability and invariants across state transitions.</td>
+                  <td>`DisableUser_ShouldBeIdempotent`, retention deterministic outcomes.</td>
+                  <td>Repeated calls, unchanged state, valid and invalid windows.</td>
+                </tr>
+                <tr>
+                  <td>Cross-unit conformance</td>
+                  <td>Ensure contracts are consistent across CoreSecurity, Governance, and Integration.</td>
+                  <td>RFC7807 problem details with `errorCode` and `correlationId`.</td>
+                  <td>Representative error responses and missing-field blockers.</td>
+                </tr>
+                <tr>
+                  <td>HTTP integration</td>
+                  <td>Exercise the full ServiceHost over real HTTP without Docker.</td>
+                  <td>Login, token validation, MFA, user admin, audit, evidence, incidents, backups, OpenAPI.</td>
+                  <td>Isolated temp stores, generated AES/HMAC keys, request JSON payloads.</td>
+                </tr>
+                <tr>
+                  <td>Performance tests</td>
+                  <td>Measure local latency, concurrency stability, throughput, failures, and GC deltas for performance NFRs.</td>
+                  <td>`NFR_PERF_001_AuthorizationEvaluate_ShouldStayWithinLocalLatencyBudget`, `NFR_PERF_003_HealthEndpoint_ShouldHandleLightConcurrencyWithinBudget`</td>
+                  <td>Release build, in-process ServiceHost, generated temp policy/secrets, JSON telemetry in `PERF_RESULTS_DIR`.</td>
+                </tr>
+              </tbody>
+            </table>
+          </article>
+          <article class="card full">
+            <h3><span class="dot"></span>Test case inventory</h3>
+            <table class="table" aria-label="Test case inventory">
+              <thead><tr><th>Project</th><th>Cases</th><th>Coverage role</th></tr></thead>
+              <tbody>
+                <tr><td>`AuthModule.ServiceHost.Tests`</td><td>27</td><td>25 HTTP/API integration tests plus 2 executable performance tests.</td></tr>
+                <tr><td>`AuthModule.Foundation.Tests`</td><td>11</td><td>Persistence, entity invariants, crypto/integrity, property checks.</td></tr>
+                <tr><td>`AuthModule.CoreSecurity.Tests`</td><td>11</td><td>Authentication, authorization, tokens, approval workflow, property checks.</td></tr>
+                <tr><td>`AuthModule.Governance.Tests`</td><td>6</td><td>Audit, evidence, retention, incident lifecycle, property checks.</td></tr>
+                <tr><td>`AuthModule.Integration.Tests`</td><td>6</td><td>Contract conformance, traceability, runtime artifact, gate behavior, property checks.</td></tr>
+              </tbody>
+            </table>
+          </article>
+          <article class="card half">
+            <h3><span class="dot"></span>Build stages</h3>
+            <ul class="clean">
+              <li>Restore dependencies with `dotnet restore AuthModule.slnx`.</li>
+              <li>Set optional `POLICY_CONFIG_PATH` for local config.</li>
+              <li>Build all units with `dotnet build AuthModule.slnx --no-restore`.</li>
+              <li>Run unit test projects across Foundation, CoreSecurity, Governance, Integration.</li>
+              <li>Run HTTP integration tests through `AuthModule.ServiceHost.Tests`.</li>
+              <li>Run performance tests from `tests/AuthModule.ServiceHost.Tests/Performance/` in Release mode with `PERF_RESULTS_DIR` telemetry output.</li>
+            </ul>
+          </article>
+          <article class="card half">
+            <h3><span class="dot"></span>Build artifacts</h3>
+            <div class="artifact-list">
+              <a class="artifact md-popup-link" href="construction/build-and-test/build-instructions.md"><strong>Build instructions</strong><span>Restore, configure, build, troubleshoot</span></a>
+              <a class="artifact md-popup-link" href="construction/build-and-test/unit-test-instructions.md"><strong>Unit tests</strong><span>Per-project dotnet test commands</span></a>
+              <a class="artifact md-popup-link" href="construction/build-and-test/integration-test-instructions.md"><strong>Integration tests</strong><span>Gate tests and HTTP test coverage</span></a>
+              <a class="artifact md-popup-link" href="construction/build-and-test/performance-test-instructions.md"><strong>Performance tests</strong><span>NFR-PERF-001 and NFR-PERF-003 execution</span></a>
+              <a class="artifact md-popup-link" href="construction/build-and-test/performance-traceability.md"><strong>Performance traceability</strong><span>Requirement-to-test-to-telemetry matrix</span></a>
+              <a class="artifact md-popup-link" href="construction/build-and-test/build-and-test-summary.md"><strong>Summary</strong><span>Quality gate criteria and constraints</span></a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="traceability" data-section>
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">5. Compliance and traceability</div>
+            <h2>The walkthrough can show how a requirement survives the whole lifecycle.</h2>
+          </div>
+          <p class="section-summary">
+            The trace is not a single matrix only. It is a chain: original prompt, requirements, compliance gap remediation,
+            stories, units, designs, code summaries, tests, and audit entries.
+          </p>
+        </div>
+
+        <div class="stage-map">
+          <div class="stage">
+            <div class="stage-name">Intent</div>
+            <div class="stage-cell"><strong>Input</strong><span>Backend authentication module for a reinsurance subledger; C#, JSON persistence, Docker runtime.</span></div>
+            <div class="stage-cell"><strong>Evidence</strong><span><a class="md-popup-link" href="audit.md">Audit timeline</a> records the raw initial prompt.</span></div>
+          </div>
+          <div class="stage">
+            <div class="stage-name">Requirements</div>
+            <div class="stage-cell"><strong>Output</strong><span>FR/NFR set covering auth, authorization, audit, privacy, incidents, backup, governance, testing.</span></div>
+            <div class="stage-cell"><strong>Evidence</strong><span><a class="md-popup-link" href="inception/requirements/requirements.md">requirements.md</a> plus compliance gap updates.</span></div>
+          </div>
+          <div class="stage">
+            <div class="stage-name">Stories</div>
+            <div class="stage-cell"><strong>Output</strong><span>User-facing and compliance-facing behavior slices with acceptance criteria.</span></div>
+            <div class="stage-cell"><strong>Evidence</strong><span><a class="md-popup-link" href="inception/user-stories/stories.md">stories.md</a> and <a class="md-popup-link" href="inception/user-stories/personas.md">personas.md</a>.</span></div>
+          </div>
+          <div class="stage">
+            <div class="stage-name">Units</div>
+            <div class="stage-cell"><strong>Output</strong><span>Four cohesive units with dependency order and story map.</span></div>
+            <div class="stage-cell"><strong>Evidence</strong><span><a class="md-popup-link" href="inception/application-design/unit-of-work-story-map.md">unit-of-work-story-map.md</a>.</span></div>
+          </div>
+          <div class="stage">
+            <div class="stage-name">Code and tests</div>
+            <div class="stage-cell"><strong>Output</strong><span>C# modules, API endpoints, JSON stores, conformance checks, HTTP tests, and executable performance tests.</span></div>
+            <div class="stage-cell"><strong>Evidence</strong><span>Per-unit <a class="md-popup-link" href="construction/uow-02-core-security/code/code-generation-summary.md">code summaries</a> and build/test docs.</span></div>
+          </div>
+          <div class="stage">
+            <div class="stage-name">Performance NFRs</div>
+            <div class="stage-cell"><strong>Output</strong><span>Automated checks for local authorization micro-latency and health endpoint light concurrency.</span></div>
+            <div class="stage-cell"><strong>Evidence</strong><span><a class="md-popup-link" href="construction/build-and-test/performance-traceability.md">performance-traceability.md</a> maps NFR-PERF-001 and NFR-PERF-003 to tests and telemetry.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="result" data-section>
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">6. Actual result</div>
+            <h2>The repository is the end-to-end result of the AI-DLC run.</h2>
+          </div>
+          <p class="section-summary">
+            The stage outputs below are the client-facing proof points: each stage has inputs, outputs, and reviewable artifacts.
+            Details stay collapsed until the presenter needs them.
+          </p>
+        </div>
+
+        <details open>
+          <summary>Inception outputs</summary>
+          <div class="detail-body">
+            <div class="artifact-list">
+              <a class="artifact md-popup-link" href="inception/requirements/requirements.md"><strong>Requirements</strong><span>Functional, NFR, compliance, trace notes</span></a>
+              <a class="artifact md-popup-link" href="inception/user-stories/stories.md"><strong>User stories</strong><span>Accepted behavior and compliance stories</span></a>
+              <a class="artifact md-popup-link" href="inception/application-design/application-design.md"><strong>Application design</strong><span>High-level component and service structure</span></a>
+              <a class="artifact md-popup-link" href="inception/application-design/components.md"><strong>Components</strong><span>Auth API, Admin API, Audit, Governance, Persistence</span></a>
+              <a class="artifact md-popup-link" href="inception/application-design/services.md"><strong>Services</strong><span>Authentication, Authorization, Evidence, Privacy, Incidents</span></a>
+              <a class="artifact md-popup-link" href="inception/application-design/unit-of-work.md"><strong>Units of work</strong><span>Four-unit decomposition strategy</span></a>
+            </div>
+          </div>
+        </details>
+
+        <details>
+          <summary>Construction outputs per unit</summary>
+          <div class="detail-body">
+            <table class="table">
+              <thead><tr><th>Unit</th><th>Primary input</th><th>Primary output</th><th>Artifacts</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>UOW-01 Foundation</td>
+                  <td>Persistence and shared primitive requirements.</td>
+                  <td>Foundation module, JSON repositories, crypto/integrity, diagnostics.</td>
+                  <td><a class="md-popup-link" href="construction/uow-01-foundation/code/code-generation-summary.md">Code summary</a></td>
+                </tr>
+                <tr>
+                  <td>UOW-02 Core Security</td>
+                  <td>Authentication, authorization, token, MFA, approval requirements.</td>
+                  <td>CoreSecurity module, auth/authz services, token lifecycle, admin behavior.</td>
+                  <td><a class="md-popup-link" href="construction/uow-02-core-security/code/code-generation-summary.md">Code summary</a></td>
+                </tr>
+                <tr>
+                  <td>UOW-03 Governance</td>
+                  <td>Audit, evidence, privacy, retention, incident requirements.</td>
+                  <td>Governance module, evidence services, retention, incidents, DSR support.</td>
+                  <td><a class="md-popup-link" href="construction/uow-03-governance/code/code-generation-summary.md">Code summary</a></td>
+                </tr>
+                <tr>
+                  <td>UOW-04 Integration Readiness</td>
+                  <td>Cross-unit contracts, traceability, quality gate requirements.</td>
+                  <td>Integration module, conformance checker, runtime artifact checker, gate service.</td>
+                  <td><a class="md-popup-link" href="construction/uow-04-integration-readiness/code/code-generation-summary.md">Code summary</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details>
+          <summary>Build, test, and performance outputs</summary>
+          <div class="detail-body">
+            <div class="artifact-list">
+              <a class="artifact md-popup-link" href="construction/build-and-test/build-and-test-summary.md"><strong>Build and test summary</strong><span>Quality gate criteria across units</span></a>
+              <a class="artifact md-popup-link" href="construction/build-and-test/integration-test-instructions.md"><strong>HTTP integration coverage</strong><span>Full API surface through WebApplicationFactory</span></a>
+              <a class="artifact md-popup-link" href="construction/build-and-test/performance-test-instructions.md"><strong>Performance test instructions</strong><span>Release-mode micro-latency and concurrency tests</span></a>
+              <a class="artifact md-popup-link" href="construction/build-and-test/performance-traceability.md"><strong>Performance traceability</strong><span>NFRs mapped to executable tests and telemetry</span></a>
+              <a class="artifact" href="../tests/AuthModule.ServiceHost.Tests/Performance/"><strong>Performance test code</strong><span>Concurrency and micro-latency test classes</span></a>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <section id="decomposition" data-section>
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">7. Functional decomposition</div>
+            <h2>The implementation follows the units, not arbitrary prompt output.</h2>
+          </div>
+          <p class="section-summary">
+            The generated solution is a single service with internal module folders. That keeps the demo easy to run while preserving
+            clear unit boundaries for design, code, tests, and traceability.
+          </p>
+        </div>
+
+        <div class="grid">
+          <article class="card">
+            <h3><span class="dot"></span>Foundation</h3>
+            <p>Shared primitives, request context, configuration, JSON persistence, encryption, signatures, store integrity, diagnostics.</p>
+            <div class="artifact-list">
+              <a class="artifact" href="../src/AuthModule/Foundation/Foundation.csproj"><strong>Foundation.csproj</strong><span>Runtime project</span></a>
+            </div>
+          </article>
+          <article class="card">
+            <h3><span class="dot"></span>Core Security</h3>
+            <p>Authentication, token issuing and validation, authorization decisions, MFA, user administration, approval workflows.</p>
+            <div class="artifact-list">
+              <a class="artifact" href="../src/AuthModule/CoreSecurity/CoreSecurity.csproj"><strong>CoreSecurity.csproj</strong><span>Runtime project</span></a>
+            </div>
+          </article>
+          <article class="card">
+            <h3><span class="dot"></span>Governance</h3>
+            <p>Audit query, evidence capture/export, legal hold behavior, retention, incident and continuity records.</p>
+            <div class="artifact-list">
+              <a class="artifact" href="../src/AuthModule/Governance/Governance.csproj"><strong>Governance.csproj</strong><span>Runtime project</span></a>
+            </div>
+          </article>
+          <article class="card">
+            <h3><span class="dot"></span>Integration readiness</h3>
+            <p>Contract conformance, runtime artifact checks, traceability checks, integration gate outcomes.</p>
+            <div class="artifact-list">
+              <a class="artifact" href="../src/AuthModule/Integration/Integration.csproj"><strong>Integration.csproj</strong><span>Runtime project</span></a>
+            </div>
+          </article>
+          <article class="card wide">
+            <h3><span class="dot"></span>Service host and runtime</h3>
+            <p>All modules are wired into one C# backend service. Docker Compose provides the API container, config/secrets/data mounts, and backup scheduler.</p>
+            <div class="artifact-list">
+              <a class="artifact" href="../src/AuthModule/ServiceHost/Program.cs"><strong>Program.cs</strong><span>DI, endpoint mapping, OpenAPI</span></a>
+              <a class="artifact" href="../docker-compose.yml"><strong>docker-compose.yml</strong><span>API and backup scheduler</span></a>
+              <a class="artifact" href="../config/policy.local.json"><strong>policy.local.json</strong><span>Local policy configuration</span></a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="architecture" data-section>
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">8. Architecture and runtime</div>
+            <h2>Architecture is presented as the link between lifecycle artifacts and running software.</h2>
+          </div>
+          <p class="section-summary">
+            Use this section when the client asks what the AI-DLC actually produced at runtime:
+            endpoints, modules, stores, secrets, backup behavior, tests, and quality gates.
+          </p>
+        </div>
+
+        <div class="mermaid-wrap">
+          <pre class="mermaid">
+flowchart LR
+  Intent["Business Intent"]
+  Docs["aidlc-docs<br/>requirements, stories, designs, plans"]
+  Rules[".github/copilot-instructions.md<br/>.aidlc-rule-details"]
+  Host["ServiceHost<br/>C# backend"]
+
+  subgraph Runtime["Docker runtime"]
+    Api["auth-module-api<br/>HTTP :8080"]
+    Config["policy config mount"]
+    Secrets["mounted AES/HMAC secrets"]
+    Data["encrypted JSON stores"]
+    Backup["backup scheduler"]
+  end
+
+  subgraph Modules["Internal modules"]
+    Foundation["Foundation<br/>persistence, crypto, integrity"]
+    Core["CoreSecurity<br/>auth, authz, tokens, MFA"]
+    Governance["Governance<br/>audit, evidence, incidents"]
+    Integration["Integration<br/>conformance, traceability, gate"]
+  end
+
+  subgraph Verification["Verification"]
+    Unit["Unit and property tests"]
+    Contract["Cross-unit contract tests"]
+    Http["HTTP integration tests"]
+    Perf["Performance tests<br/>NFR-PERF-001 / NFR-PERF-003"]
+    Build["Build and test gate"]
+  end
+
+  Intent --> Rules
+  Rules --> Docs
+  Docs --> Host
+  Host --> Api
+  Api --> Config
+  Api --> Secrets
+  Api --> Data
+  Backup --> Data
+  Host --> Foundation
+  Host --> Core
+  Host --> Governance
+  Host --> Integration
+  Foundation --> Unit
+  Core --> Unit
+  Governance --> Unit
+  Integration --> Contract
+  Api --> Http
+  Api --> Perf
+  Unit --> Build
+  Contract --> Build
+  Http --> Build
+  Perf --> Build
+          </pre>
+        </div>
+
+        <div style="height:18px"></div>
+        <div class="grid">
+          <article class="card half">
+            <h3><span class="dot"></span>Live service links</h3>
+            <ul class="clean">
+              <li><a href="http://localhost:8080/docs" target="_blank" rel="noopener noreferrer">Swagger UI</a> when the service is running.</li>
+              <li><a href="http://localhost:8080/openapi/v1.json" target="_blank" rel="noopener noreferrer">OpenAPI JSON</a> for contract inspection.</li>
+              <li><a href="http://localhost:8080/health" target="_blank" rel="noopener noreferrer">Health endpoint</a> for liveness.</li>
+            </ul>
+          </article>
+          <article class="card half">
+            <h3><span class="dot"></span>Presenter close</h3>
+            <p>
+              The central message for the client: AI-DLC does not replace developer responsibility.
+              It gives developers a structured way to make AI plan, document, implement, test, and prove the work under human control.
+            </p>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="mdModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="mdModalTitle">
+      <div class="modal-header">
+        <h3 class="modal-title" id="mdModalTitle">Document</h3>
+        <button class="close-btn" id="closeModalBtn" type="button">Close</button>
+      </div>
+      <div class="md-content" id="mdModalContent">Loading...</div>
+      <p class="hint" id="mdModalHint"></p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: "dark" });
+
+    const modal = document.getElementById("mdModal");
+    const titleEl = document.getElementById("mdModalTitle");
+    const contentEl = document.getElementById("mdModalContent");
+    const hintEl = document.getElementById("mdModalHint");
+    const closeBtn = document.getElementById("closeModalBtn");
+
+    function closeModal() {
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+    }
+
+    async function openMarkdown(link) {
+      const href = link.getAttribute("href");
+      titleEl.textContent = link.querySelector("strong")?.textContent || link.textContent.trim();
+      contentEl.innerHTML = "Loading...";
+      hintEl.textContent = "";
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+
+      try {
+        const response = await fetch(href);
+        if (!response.ok) throw new Error(`Unable to load ${href}`);
+        const markdown = await response.text();
+        contentEl.innerHTML = marked.parse(markdown);
+      } catch (error) {
+        contentEl.innerHTML = `<p>Could not load <code>${href}</code>.</p>`;
+        hintEl.textContent = "If you opened this file directly via file:// and content is blocked, run scripts/serve-walkthrough.sh or another local web server.";
+      }
+    }
+
+    document.querySelectorAll(".md-popup-link").forEach((link) => {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        openMarkdown(link);
+      });
+    });
+
+    closeBtn.addEventListener("click", closeModal);
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) closeModal();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeModal();
+    });
+
+    const navLinks = [...document.querySelectorAll(".nav a")];
+    const sections = [...document.querySelectorAll("[data-section]")];
+    navLinks[0]?.classList.add("active");
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (!visible) return;
+      navLinks.forEach((link) => {
+        link.classList.toggle("active", link.getAttribute("href") === `#${visible.target.id}`);
+      });
+    }, { rootMargin: "-20% 0px -55% 0px", threshold: [0.1, 0.25, 0.5] });
+
+    sections.forEach((section) => observer.observe(section));
+  </script>
+</body>
+</html>

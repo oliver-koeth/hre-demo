@@ -66,6 +66,11 @@ Run tests:
 dotnet test AuthModule.slnx
 ```
 
+Run performance tests (micro-latency + light concurrency):
+```bash
+PERF_RESULTS_DIR="$(pwd)/artifacts/perf" dotnet test tests/AuthModule.ServiceHost.Tests/AuthModule.ServiceHost.Tests.csproj --filter "PerfType=Micro|PerfType=Concurrency"
+```
+
 ## Walkthrough for colleagues
 
 Open the static walkthrough:

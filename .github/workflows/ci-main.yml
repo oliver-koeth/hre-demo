@@ -46,3 +46,50 @@ jobs:
 
       - name: HTTP integration tests
         run: dotnet test tests/AuthModule.ServiceHost.Tests/AuthModule.ServiceHost.Tests.csproj --configuration Release --no-build --nologo
+
+      - name: Performance tests - micro latency
+        env:
+          PERF_RESULTS_DIR: ${{ github.workspace }}/artifacts/perf
+        run: dotnet test tests/AuthModule.ServiceHost.Tests/AuthModule.ServiceHost.Tests.csproj --configuration Release --no-build --filter "PerfType=Micro" --nologo
+
+      - name: Performance tests - light concurrency
+        env:
+          PERF_RESULTS_DIR: ${{ github.workspace }}/artifacts/perf
+        run: dotnet test tests/AuthModule.ServiceHost.Tests/AuthModule.ServiceHost.Tests.csproj --configuration Release --no-build --filter "PerfType=Concurrency" --nologo
+
+      - name: Performance telemetry summary
+        run: |
+          python3 - <<'PY'
+          import glob
+          import json
+          import os
+
+          files = glob.glob("artifacts/perf/*.json")
+          if not files:
+              raise SystemExit("No performance telemetry artifacts found in artifacts/perf")
+
+          rows = []
+          for file in files:
+              with open(file, "r", encoding="utf-8") as f:
+                  rows.append(json.load(f))
+
+          rows.sort(key=lambda r: (r["requirementId"], r["scenario"]))
+          lines = []
+          lines.append("## Performance telemetry")
+          lines.append("")
+          lines.append("| Requirement | Scenario | p95 (ms) | p99 (ms) | Max (ms) | Throughput (/s) | Failed |")
+          lines.append("|---|---|---:|---:|---:|---:|---:|")
+          for r in rows:
+              lines.append(
+                  f"| {r['requirementId']} | {r['scenario']} | {r['p95Ms']:.2f} | {r['p99Ms']:.2f} | {r['maxMs']:.2f} | {r['throughputPerSecond']:.2f} | {r['failedRequests']} |"
+              )
+
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
+              f.write("\n".join(lines) + "\n")
+          PY
+
+      - name: Upload performance telemetry artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-telemetry
+          path: artifacts/perf/*.json

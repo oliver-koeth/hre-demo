@@ -68,6 +68,7 @@
 - [ ] Code Generation (per-unit)
 - [x] Build and Test approved
 - [x] HTTP Integration Tests added — `AuthModule.ServiceHost.Tests` (25 test cases, WebApplicationFactory, all passing)
+- [x] Performance Tests added — NFR-PERF-001 micro-latency + NFR-PERF-003 light-concurrency with CI telemetry artifacts
 
 ### 🟡 OPERATIONS PHASE
 - [x] Operations (Placeholder - acknowledged)

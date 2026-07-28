@@ -1,45 +1,47 @@
 # Performance Test Instructions
 
 ## Purpose
-Validate that integration-gate control-plane behavior remains within selected UOW-04 NFR bounds.
+Validate local performance baselines without a dedicated load rig by measuring:
+- micro-latency for a hot authorization path
+- light concurrency behavior for health/readiness traffic
+- basic runtime bottleneck indicators (p95/p99/max, throughput, GC collection deltas)
 
-## Performance Requirements
-- **Gate Decision Latency**: P95 < 15 seconds
-- **Gate Throughput**: 5 evaluations/minute
-- **Concurrent Requests**: bounded parallel requests in-process
-- **Error Rate**: 0% for healthy baseline inputs
+## Implemented Performance Requirements
+- **NFR-PERF-001**: authorization evaluation stays within local p95 budget for sequential requests.
+- **NFR-PERF-003**: health endpoint sustains light parallel traffic with zero failures and bounded p95 latency.
 
-## Setup Performance Test Environment
+## Test Artifacts
+- **Project**: `tests/AuthModule.ServiceHost.Tests/AuthModule.ServiceHost.Tests.csproj`
+- **Telemetry output**: JSON files in `PERF_RESULTS_DIR` (or `bin/**/perf-artifacts` by default)
+- **CI visualization**: GitHub Actions Step Summary table + uploaded JSON artifacts
 
-### 1. Prepare Environment
+## Run Performance Tests Locally
+
+### 1. Build once
 ```bash
-dotnet build AuthModule.slnx --no-restore
+dotnet build AuthModule.slnx --configuration Release --nologo
 ```
 
-### 2. Configure Test Parameters
-- **Test Duration**: 5 minutes
-- **Ramp-up**: linear to target request rate
-- **Virtual Users**: enough to sustain 5 evaluations/minute
-
-## Run Performance Tests
-
-### 1. Execute Baseline Loop (lightweight script approach)
+### 2. Run micro-latency test
 ```bash
-for i in {1..25}; do dotnet test tests/AuthModule.Integration.Tests/AuthModule.Integration.Tests.csproj --nologo --filter "FullyQualifiedName~IntegrationGateTests.GateOutcome_ShouldBeDeterministic_ForUnchangedInputs"; done
+PERF_RESULTS_DIR="$(pwd)/artifacts/perf" dotnet test tests/AuthModule.ServiceHost.Tests/AuthModule.ServiceHost.Tests.csproj --configuration Release --no-build --filter "PerfType=Micro" --nologo
 ```
 
-### 2. Execute Stress Variant (artifact/conformance perturbation)
+### 3. Run light-concurrency test
 ```bash
-dotnet test tests/AuthModule.Integration.Tests/AuthModule.Integration.Tests.csproj --nologo --filter "FullyQualifiedName~IntegrationGateTests"
+PERF_RESULTS_DIR="$(pwd)/artifacts/perf" dotnet test tests/AuthModule.ServiceHost.Tests/AuthModule.ServiceHost.Tests.csproj --configuration Release --no-build --filter "PerfType=Concurrency" --nologo
 ```
 
-### 3. Analyze Results
-- **Latency**: compare observed run durations to target
-- **Throughput**: confirm stable completion rate at target gate frequency
-- **Error Rate**: confirm no unexpected failures in deterministic baseline
-- **Bottlenecks**: investigate file I/O and route-source parsing if latency degrades
+### 4. Inspect telemetry
+Each JSON artifact includes:
+- `RequirementId`, `Scenario`, `Endpoint`
+- `P50Ms`, `P95Ms`, `P99Ms`, `MaxMs`
+- `ThroughputPerSecond`
+- `FailedRequests`
+- `Gen0Collections`, `Gen1Collections`, `Gen2Collections`
 
-## Optimization Guidance
-1. reduce repeated file reads via controlled caching only if determinism is preserved
-2. tighten checker scope to required endpoints/stories
-3. rerun tests after each optimization
+## Bottleneck Interpretation Guide
+- **High p95 + low p50**: tail-latency spikes, likely contention or intermittent I/O stalls.
+- **Throughput drop with stable latency**: thread-pool or connection saturation.
+- **GC deltas jump with latency growth**: allocation pressure in request path.
+- **Error count > 0**: treat as blocking regardless of latency.

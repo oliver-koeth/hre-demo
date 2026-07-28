@@ -11,6 +11,7 @@ COPY tests/AuthModule.Foundation.Tests/AuthModule.Foundation.Tests.csproj tests/
 COPY tests/AuthModule.CoreSecurity.Tests/AuthModule.CoreSecurity.Tests.csproj tests/AuthModule.CoreSecurity.Tests/
 COPY tests/AuthModule.Governance.Tests/AuthModule.Governance.Tests.csproj tests/AuthModule.Governance.Tests/
 COPY tests/AuthModule.Integration.Tests/AuthModule.Integration.Tests.csproj tests/AuthModule.Integration.Tests/
+COPY tests/AuthModule.ServiceHost.Tests/AuthModule.ServiceHost.Tests.csproj tests/AuthModule.ServiceHost.Tests/
 RUN dotnet restore AuthModule.slnx
 
 COPY . .

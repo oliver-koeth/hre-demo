@@ -4,7 +4,7 @@ set -eu
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 HOST="${HOST:-127.0.0.1}"
 PORT="${PORT:-8000}"
-WALKTHROUGH_URL="http://${HOST}:${PORT}/aidlc-docs/v1-ai-dlc-walkthrough.html"
+WALKTHROUGH_URL="http://${HOST}:${PORT}/aidlc-docs/v1-ai-dlc-walkthrough_v2.html"
 
 if ! command -v watchexec >/dev/null 2>&1; then
   echo "Error: watchexec is required but not found in PATH." >&2

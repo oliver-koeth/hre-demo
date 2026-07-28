@@ -1,0 +1,113 @@
+name: Security Scans
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  codeql:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: csharp
+
+      - name: CodeQL Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+  dependency-secrets-and-container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore solution
+        run: dotnet restore AuthModule.slnx --nologo
+
+      - name: NuGet vulnerability scan
+        run: |
+          mkdir -p artifacts/security
+          dotnet list AuthModule.slnx package --vulnerable --include-transitive --format json > artifacts/security/nuget-vulnerabilities.json
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path("artifacts/security/nuget-vulnerabilities.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          vulnerable = []
+
+          for project in data.get("projects", []):
+              for framework in project.get("frameworks", []) or []:
+                  for key in ("topLevelPackages", "transitivePackages"):
+                      for pkg in framework.get(key, []) or []:
+                          vulns = pkg.get("vulnerabilities", []) or []
+                          for vuln in vulns:
+                              vulnerable.append({
+                                  "project": project.get("path"),
+                                  "framework": framework.get("framework"),
+                                  "package": pkg.get("id"),
+                                  "resolvedVersion": pkg.get("resolvedVersion"),
+                                  "severity": vuln.get("severity"),
+                                  "advisoryUrl": vuln.get("advisoryurl"),
+                              })
+
+          lines = []
+          lines.append("## NuGet vulnerability scan")
+          lines.append("")
+          if not vulnerable:
+              lines.append("No vulnerable packages detected.")
+          else:
+              lines.append("| Project | Framework | Package | Version | Severity | Advisory |")
+              lines.append("|---|---|---|---|---|---|")
+              for v in vulnerable:
+                  lines.append(
+                      f"| {v['project']} | {v['framework']} | {v['package']} | {v['resolvedVersion']} | {v['severity']} | {v['advisoryUrl']} |"
+                  )
+
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
+              f.write("\n".join(lines) + "\n")
+
+          if vulnerable:
+              raise SystemExit(f"Found {len(vulnerable)} vulnerable package entries.")
+          PY
+
+      - name: Trivy repository scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+          ignore-unfixed: true
+          format: table
+
+      - name: Gitleaks secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

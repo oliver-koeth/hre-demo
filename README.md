@@ -71,10 +71,26 @@ Run performance tests (micro-latency + light concurrency):
 PERF_RESULTS_DIR="$(pwd)/artifacts/perf" dotnet test tests/AuthModule.ServiceHost.Tests/AuthModule.ServiceHost.Tests.csproj --filter "PerfType=Micro|PerfType=Concurrency"
 ```
 
+Run security tests:
+```bash
+dotnet test tests/AuthModule.CoreSecurity.Tests/AuthModule.CoreSecurity.Tests.csproj --filter "Security=True"
+dotnet test tests/AuthModule.ServiceHost.Tests/AuthModule.ServiceHost.Tests.csproj --filter "Security=True"
+```
+
+Run security scans locally (open-source tooling):
+```bash
+dotnet list AuthModule.slnx package --vulnerable --include-transitive
+trivy fs --severity HIGH,CRITICAL --ignore-unfixed .
+gitleaks detect --source . --verbose
+```
+
 ## Walkthrough for colleagues
 
 Open the static walkthrough:
-- `aidlc-docs/v1-ai-dlc-walkthrough.html`
+- `aidlc-docs/v1-ai-dlc-walkthrough_v2.html`
+
+Published GitHub Pages walkthrough:
+- `https://oliver-koeth.github.io/hre-demo/`
 
 Serve it locally with auto-restart on changes:
 ```bash

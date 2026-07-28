@@ -44,6 +44,12 @@ jobs:
       - name: Compliance checks - Traceability and gate readiness
         run: dotnet test tests/AuthModule.Integration.Tests/AuthModule.Integration.Tests.csproj --configuration Release --no-build --filter "FullyQualifiedName~Gate" --nologo
 
+      - name: Security tests - CoreSecurity
+        run: dotnet test tests/AuthModule.CoreSecurity.Tests/AuthModule.CoreSecurity.Tests.csproj --configuration Release --no-build --filter "Security=True" --nologo
+
+      - name: Security tests - ServiceHost HTTP
+        run: dotnet test tests/AuthModule.ServiceHost.Tests/AuthModule.ServiceHost.Tests.csproj --configuration Release --no-build --filter "Security=True" --nologo
+
       - name: HTTP integration tests
         run: dotnet test tests/AuthModule.ServiceHost.Tests/AuthModule.ServiceHost.Tests.csproj --configuration Release --no-build --nologo
 

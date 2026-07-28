@@ -87,6 +87,12 @@ public sealed class ApprovalWorkflowService(
 {
     public Task<Result<ApprovalTicket, DomainError>> RequestApprovalAsync(ApprovalRequest request, RequestContext context)
     {
+        if (context.UserId is null)
+        {
+            return Task.FromResult(Result<ApprovalTicket, DomainError>.Failure(
+                ErrorFactory.Forbidden("Authenticated actor is required for approval workflow.", context)));
+        }
+
         if (!IsGovernedChangeType(request.ChangeType))
         {
             return Task.FromResult(Result<ApprovalTicket, DomainError>.Failure(
@@ -109,6 +115,12 @@ public sealed class ApprovalWorkflowService(
 
     public async Task<Result<ApprovalTicket, DomainError>> DecideApprovalAsync(ApprovalDecisionRequest request, RequestContext context)
     {
+        if (context.UserId is null)
+        {
+            return Result<ApprovalTicket, DomainError>.Failure(
+                ErrorFactory.Forbidden("Authenticated actor is required for approval workflow.", context));
+        }
+
         var ticket = stateStore.GetApproval(request.TicketId);
         if (ticket is null)
         {

@@ -69,6 +69,9 @@
 - [x] Build and Test approved
 - [x] HTTP Integration Tests added — `AuthModule.ServiceHost.Tests` (25 test cases, WebApplicationFactory, all passing)
 - [x] Performance Tests added — NFR-PERF-001 micro-latency + NFR-PERF-003 light-concurrency with CI telemetry artifacts
+- [x] Security Tests added — JWT negative-path validation + approval actor-enforcement tests
+- [x] Security Scans added — CodeQL, NuGet vulnerability gate, Trivy, Gitleaks in GitHub Actions
+- [x] Walkthrough Pages deployment added — `pages-deploy.yml` with site build + link validation for `https://oliver-koeth.github.io/hre-demo/`
 
 ### 🟡 OPERATIONS PHASE
 - [x] Operations (Placeholder - acknowledged)

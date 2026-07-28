@@ -1233,6 +1233,26 @@ flowchart LR
     const contentEl = document.getElementById("mdModalContent");
     const hintEl = document.getElementById("mdModalHint");
     const closeBtn = document.getElementById("closeModalBtn");
+    const repoOwner = "oliver-koeth";
+    const repoName = "hre-demo";
+
+    function buildMarkdownFetchCandidates(href) {
+      if (/^https?:\/\//i.test(href)) {
+        return [href];
+      }
+
+      const cleaned = href.replace(/^\.?\//, "");
+      const deDotted = cleaned.replace(/^(\.\.\/)+/, "");
+      const fromCurrent = new URL(href, window.location.href).toString();
+      const fromRoot = new URL(deDotted, `${window.location.origin}/`).toString();
+      const fromAidlcDocsRoot = new URL(`aidlc-docs/${deDotted}`, `${window.location.origin}/`).toString();
+
+      const rawGitHubFallback = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${
+        cleaned.startsWith("../") ? deDotted : `aidlc-docs/${deDotted}`
+      }`;
+
+      return [...new Set([fromCurrent, fromAidlcDocsRoot, fromRoot, rawGitHubFallback])];
+    }
 
     function closeModal() {
       modal.classList.remove("open");
@@ -1247,14 +1267,24 @@ flowchart LR
       modal.classList.add("open");
       modal.setAttribute("aria-hidden", "false");
 
-      try {
-        const response = await fetch(href);
-        if (!response.ok) throw new Error(`Unable to load ${href}`);
-        const markdown = await response.text();
-        contentEl.innerHTML = marked.parse(markdown);
-      } catch (error) {
+      const candidates = buildMarkdownFetchCandidates(href);
+      let loaded = false;
+      for (const candidate of candidates) {
+        try {
+          const response = await fetch(candidate);
+          if (!response.ok) continue;
+          const markdown = await response.text();
+          contentEl.innerHTML = marked.parse(markdown);
+          loaded = true;
+          break;
+        } catch {
+          // Try next candidate.
+        }
+      }
+
+      if (!loaded) {
         contentEl.innerHTML = `<p>Could not load <code>${href}</code>.</p>`;
-        hintEl.textContent = "If you opened this file directly via file:// and content is blocked, run scripts/serve-walkthrough.sh or another local web server.";
+        hintEl.textContent = "Run scripts/serve-walkthrough.sh locally, or use the GitHub Pages build where linked artifacts are published.";
       }
     }
 

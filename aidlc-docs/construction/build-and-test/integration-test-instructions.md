@@ -53,6 +53,15 @@ These tests start the full `ServiceHost` in-process using `WebApplicationFactory
 dotnet test tests/AuthModule.ServiceHost.Tests/AuthModule.ServiceHost.Tests.csproj --nologo
 ```
 
+### Run HTTP Security-Focused Tests
+```bash
+dotnet test tests/AuthModule.ServiceHost.Tests/AuthModule.ServiceHost.Tests.csproj --filter "Security=True" --nologo
+```
+
+Security-focused HTTP scenarios include:
+- Approval workflow endpoints reject requests without authenticated actor headers.
+- Approval decision endpoint rejects unauthenticated approval attempts.
+
 ### Run All Integration Tests
 ```bash
 dotnet test tests/AuthModule.Integration.Tests/ tests/AuthModule.ServiceHost.Tests/ --nologo
@@ -62,4 +71,3 @@ dotnet test tests/AuthModule.Integration.Tests/ tests/AuthModule.ServiceHost.Tes
 - Each `IClassFixture<ServiceHostFactory>` creates its own `TestPolicyConfig` with a unique temp directory and generated AES/HMAC keys.
 - Host initialization is serialized with a `SemaphoreSlim` so parallel test classes don't race on environment variable injection.
 - Temp directories are deleted in `DisposeAsync`.
-

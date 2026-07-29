@@ -50,7 +50,7 @@ public sealed class TestPolicyConfig : IDisposable
                 stepUpChallengeTtlSeconds = 300,
                 tokenValidationCacheSeconds = 5,
                 approvalRetryCount = 2,
-                tokenSigningKey = "integration-test-signing-key-abc123xyz",
+                tokenSigningKey = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)),
             },
             governance = new
             {

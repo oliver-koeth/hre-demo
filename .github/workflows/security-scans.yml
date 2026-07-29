@@ -7,11 +7,14 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   security-events: write
+  id-token: write
+  attestations: write
 
 jobs:
   codeql:
+    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -35,6 +38,7 @@ jobs:
         uses: github/codeql-action/analyze@v3
 
   dependency-secrets-and-container:
+    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -111,3 +115,177 @@ jobs:
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload security scan artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-scan-artifacts
+          path: artifacts/security/*
+          if-no-files-found: ignore
+          retention-days: 90
+
+  dora-evidence-and-attestation:
+    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]') }}
+    needs:
+      - codeql
+      - dependency-secrets-and-container
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download security scan artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: security-scan-artifacts
+          path: artifacts/security
+
+      - name: Append successful run evidence to DORA report
+        env:
+          DORA_DOC: aidlc-docs/compliance/dora-compliance.md
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          WORKFLOW_NAME: ${{ github.workflow }}
+          WORKFLOW_RESULT: success
+          CODEQL_RESULT: ${{ needs.codeql.result }}
+          DEPSEC_RESULT: ${{ needs.dependency-secrets-and-container.result }}
+        run: |
+          python3 - <<'PY'
+          import datetime
+          import os
+          from pathlib import Path
+
+          doc = Path(os.environ["DORA_DOC"])
+          content = doc.read_text(encoding="utf-8")
+
+          section = "## 19. CI Security Scan Run Log"
+          header = "| Timestamp (UTC) | Workflow | Run ID | Attempt | Result | URL | CodeQL Job | Dependency/Secrets/Container Job |"
+          sep = "|---|---|---:|---:|---|---|---|---|"
+          ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+          row = (
+              f"| {ts} | {os.environ['WORKFLOW_NAME']} | {os.environ['RUN_ID']} | "
+              f"{os.environ['RUN_ATTEMPT']} | {os.environ['WORKFLOW_RESULT']} | "
+              f"{os.environ['RUN_URL']} | {os.environ['CODEQL_RESULT']} | {os.environ['DEPSEC_RESULT']} |"
+          )
+
+          if section not in content:
+              if not content.endswith("\n"):
+                  content += "\n"
+              content += "\n" + section + "\n" + header + "\n" + sep + "\n" + row + "\n"
+          else:
+              insertion = header + "\n" + sep + "\n"
+              if insertion in content:
+                  content = content.replace(insertion, insertion + row + "\n", 1)
+              else:
+                  content += "\n" + row + "\n"
+
+          doc.write_text(content, encoding="utf-8")
+          PY
+
+      - name: Create run evidence JSON
+        env:
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          WORKFLOW_NAME: ${{ github.workflow }}
+          CODEQL_RESULT: ${{ needs.codeql.result }}
+          DEPSEC_RESULT: ${{ needs.dependency-secrets-and-container.result }}
+        run: |
+          mkdir -p artifacts/security
+          python3 - <<'PY'
+          import datetime
+          import json
+          import os
+          from pathlib import Path
+
+          payload = {
+              "timestampUtc": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+              "workflow": os.environ["WORKFLOW_NAME"],
+              "runId": os.environ["RUN_ID"],
+              "runAttempt": os.environ["RUN_ATTEMPT"],
+              "result": "success",
+              "runUrl": os.environ["RUN_URL"],
+              "jobs": {
+                  "codeql": os.environ["CODEQL_RESULT"],
+                  "dependencySecretsAndContainer": os.environ["DEPSEC_RESULT"],
+              },
+          }
+          Path("artifacts/security/security-scan-run-evidence.json").write_text(
+              json.dumps(payload, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Update DORA stamp metadata
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import re
+          import subprocess
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          doc = Path("aidlc-docs/compliance/dora-compliance.md")
+          content = doc.read_text(encoding="utf-8")
+
+          stamp_header = "## 18. Integrity Stamp"
+          if stamp_header not in content:
+            raise SystemExit("Missing integrity stamp section in DORA document.")
+
+          body = content.split(stamp_header)[0]
+          body_hash = hashlib.sha256(body.encode("utf-8")).hexdigest()
+          branch = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"], text=True).strip()
+          commit = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+          replacements = {
+              r"(^- \*\*Branch\*\*: ).*$": rf"\1{branch}",
+              r"(^- \*\*Commit SHA \(40-char\)\*\*: ).*$": rf"\1{commit}",
+              r"(^- \*\*Document SHA-256\*\*: ).*$": rf"\1{body_hash}",
+              r"(^- \*\*Generated At \(UTC, ISO 8601\)\*\*: ).*$": rf"\1{timestamp}",
+              r"(^- \*\*Generator Identity\*\*: ).*$": r"\1GitHub Actions security-scans workflow",
+          }
+
+          for pattern, replacement in replacements.items():
+              content, count = re.subn(pattern, replacement, content, count=1, flags=re.MULTILINE)
+              if count != 1:
+                  raise SystemExit(f"Failed to update stamp field for pattern: {pattern}")
+
+          doc.write_text(content, encoding="utf-8")
+          PY
+
+      - name: Commit and push DORA evidence update
+        env:
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add aidlc-docs/compliance/dora-compliance.md
+          if git diff --cached --quiet; then
+            echo "No DORA evidence changes to commit."
+            exit 0
+          fi
+          git commit -m "docs: record security scan run evidence [skip ci]"
+          git push
+
+      - name: Upload run evidence artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-scan-run-evidence
+          path: artifacts/security/security-scan-run-evidence.json
+          retention-days: 90
+
+      - name: Attest security scan evidence artifact provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: artifacts/security/security-scan-run-evidence.json
+
+      - name: Attest DORA compliance report provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: aidlc-docs/compliance/dora-compliance.md

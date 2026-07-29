@@ -246,11 +246,11 @@ jobs:
           timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
           replacements = {
-              r"(^- \*\*Branch\*\*: ).*$": rf"\1{branch}",
-              r"(^- \*\*Commit SHA \(40-char\)\*\*: ).*$": rf"\1{commit}",
-              r"(^- \*\*Document SHA-256\*\*: ).*$": rf"\1{body_hash}",
-              r"(^- \*\*Generated At \(UTC, ISO 8601\)\*\*: ).*$": rf"\1{timestamp}",
-              r"(^- \*\*Generator Identity\*\*: ).*$": r"\1GitHub Actions security-scans workflow",
+              r"(^- \*\*Branch\*\*: ).*$": rf"\g<1>{branch}",
+              r"(^- \*\*Commit SHA \(40-char\)\*\*: ).*$": rf"\g<1>{commit}",
+              r"(^- \*\*Document SHA-256\*\*: ).*$": rf"\g<1>{body_hash}",
+              r"(^- \*\*Generated At \(UTC, ISO 8601\)\*\*: ).*$": rf"\g<1>{timestamp}",
+              r"(^- \*\*Generator Identity\*\*: ).*$": r"\g<1>GitHub Actions security-scans workflow",
           }
 
           for pattern, replacement in replacements.items():

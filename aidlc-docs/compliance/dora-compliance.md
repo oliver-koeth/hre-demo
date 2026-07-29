@@ -127,9 +127,9 @@ will be provided by operations
 ## 18. Integrity Stamp
 - **Repository**: oliver-koeth/hre-demo
 - **Branch**: main
-- **Commit SHA (40-char)**: 64fe358165ee47962f1112c8c0357a495aeaa3f7
+- **Commit SHA (40-char)**: 39e646f978383ff6b5e0599691c86caf78c8d50c
 - **Document SHA-256**: 7f327c1957f208b58b31c090640cc48e6c31710a4b6c037e355091c853ac50ce
-- **Generated At (UTC, ISO 8601)**: 2026-07-29T15:57:53Z
+- **Generated At (UTC, ISO 8601)**: 2026-07-29T16:50:09Z
 - **Generator Identity**: GitHub Actions security-scans workflow
 
 Stamp method note: `Document SHA-256` is calculated over this document body up to (but excluding) the `## 18. Integrity Stamp` section to avoid self-referential hashing.
@@ -137,4 +137,5 @@ Stamp method note: `Document SHA-256` is calculated over this document body up t
 ## 19. CI Security Scan Run Log
 | Timestamp (UTC) | Workflow | Run ID | Attempt | Result | URL | CodeQL Job | Dependency/Secrets/Container Job |
 |---|---|---:|---:|---|---|---|---|
+| 2026-07-29T16:50:09Z | Security Scans | 30472354754 | 1 | success | https://github.com/oliver-koeth/hre-demo/actions/runs/30472354754 | success | success |
 | 2026-07-29T15:57:53Z | Security Scans | 30468278517 | 1 | success | https://github.com/oliver-koeth/hre-demo/actions/runs/30468278517 | success | success |

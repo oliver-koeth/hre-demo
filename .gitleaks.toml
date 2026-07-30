@@ -1,0 +1,6 @@
+title = "HRE Demo Gitleaks Config"
+
+[allowlist]
+paths = [
+  '''tests/AuthModule.ServiceHost.Tests/Support/TestPolicyConfig.cs''',
+]

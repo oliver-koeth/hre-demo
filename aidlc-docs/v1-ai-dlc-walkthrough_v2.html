@@ -897,10 +897,11 @@
         <a href="#implementation" data-step="2">GitHub rules</a>
         <a href="#extensions" data-step="3">Extensions</a>
         <a href="#tests-build" data-step="4">Tests and build</a>
-        <a href="#traceability" data-step="5">Traceability</a>
-        <a href="#result" data-step="6">Actual result</a>
-        <a href="#decomposition" data-step="7">Decomposition</a>
-        <a href="#architecture" data-step="8">Architecture</a>
+        <a href="#dora" data-step="5">DORA & provenance</a>
+        <a href="#traceability" data-step="6">Traceability</a>
+        <a href="#result" data-step="7">Actual result</a>
+        <a href="#decomposition" data-step="8">Decomposition</a>
+        <a href="#architecture" data-step="9">Architecture</a>
       </nav>
     </aside>
 
@@ -1295,7 +1296,7 @@
               <tbody>
                 <tr><td>Security Baseline</td><td>Enabled</td><td>Security-first requirements, secrets, fail-closed controls, auditability.</td></tr>
                 <tr><td>Resiliency Baseline</td><td>Enabled</td><td>RTO/RPO, warm standby, backup, restore, continuity decisions.</td></tr>
-                <tr><td>DORA Compliance</td><td>Enabled</td><td>Continuously maintained DORA compliance document from repository evidence, with explicit scope boundaries.</td></tr>
+                <tr><td>DORA Compliance</td><td>Enabled</td><td>Mandatory DORA compliance document with evidence-linked claims, gap register, integrity stamp, CI-driven refresh, and GitHub artifact attestations.</td></tr>
                 <tr><td>Property-Based Testing</td><td>Enabled</td><td>Invariant and idempotence tests in downstream stages.</td></tr>
               </tbody>
             </table>
@@ -1397,6 +1398,102 @@
         </div>
       </section>
 
+      <section id="dora" data-section>
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">5. DORA compliance and provenance</div>
+            <h2>Compliance evidence is generated from repository artifacts, stamped, and attested by the CI pipeline.</h2>
+          </div>
+          <p class="section-summary">
+            The DORA Compliance extension enforces a continuously maintained position paper. The document is scoped to
+            development and local integration; operational sections are explicitly bounded. Each successful security scan
+            refreshes the document, appends a run log entry, updates an integrity stamp, and produces a GitHub artifact
+            attestation for the evidence.
+          </p>
+        </div>
+
+        <div class="grid">
+          <article class="card wide">
+            <h3><span class="dot"></span>DORA compliance document</h3>
+            <p>
+              The living position paper lives at
+              <a class="md-popup-link" href="compliance/dora-compliance.md">aidlc-docs/compliance/dora-compliance.md</a>.
+              It is bootstrapped from
+              <a href="../.aidlc-rule-details/extensions/compliance/dora/dora-compliance-template.md">the extension template</a>
+              and is governed by
+              <a href="../.aidlc-rule-details/extensions/compliance/dora/dora-compliance.md">the DORA rule file</a>.
+            </p>
+            <ul class="clean">
+              <li><strong>Scope boundary:</strong> development and local integration testing only. Any section covering operational monitoring, incident response, BCDR, third-party ICT risk, or production data protection is marked with the exact phrase <code>will be provided by operations</code>.</li>
+              <li><strong>Control mapping matrix:</strong> maps DORA-style control IDs to implementation summaries and evidence file paths or workflow names.</li>
+              <li><strong>Gap register:</strong> tracks open gaps with owner, status, target date, and dependency, consistent with the operations-boundary markers.</li>
+              <li><strong>Evidence index:</strong> links directly to CI workflows, traceability docs, build/test summaries, audit timeline, and state tracking artifacts.</li>
+              <li><strong>CI security scan run log:</strong> appended automatically after every successful <code>Security Scans</code> workflow run with timestamp, run ID, attempt, result, and direct URL.</li>
+              <li><strong>Integrity stamp block:</strong> contains repository, branch, 40-character commit SHA, document SHA-256 (body only, excluding the stamp section), UTC generation time, and generator identity.</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h3><span class="dot"></span>How the stamp works</h3>
+            <p>The SHA-256 digest covers the document body, not the stamp itself. This makes the stamp tamper-evident: any edit to the body changes the digest, and any edit to the stamp is obvious because the digest no longer matches.</p>
+            <p>Fields are updated by a Python step in the <code>dora-evidence-and-attestation</code> job:</p>
+            <ul class="clean">
+              <li>Branch from <code>git rev-parse --abbrev-ref HEAD</code></li>
+              <li>Commit SHA from <code>git rev-parse HEAD</code></li>
+              <li>Document SHA-256 from the body bytes</li>
+              <li>Generated At in UTC ISO 8601</li>
+              <li>Generator Identity set to the GitHub Actions workflow</li>
+            </ul>
+          </article>
+
+          <article class="card full">
+            <h3><span class="dot"></span>CI update loop and GitHub attestations</h3>
+            <p>
+              After the <code>Security Scans</code> workflow succeeds, the <code>dora-evidence-and-attestation</code> job performs five steps:
+            </p>
+            <ol class="clean">
+              <li><strong>Append run evidence:</strong> adds a row to the <code>CI Security Scan Run Log</code> section of the DORA document with the run ID, attempt, result, and URL.</li>
+              <li><strong>Write JSON evidence:</strong> creates <code>artifacts/security/security-scan-run-evidence.json</code> with the same metadata plus per-job results.</li>
+              <li><strong>Update stamp:</strong> recomputes the document hash and refreshes branch, commit, timestamp, and generator fields.</li>
+              <li><strong>Commit and push:</strong> pushes the updated document with the message <code>docs: record security scan run evidence [skip ci]</code> so the bot update does not re-trigger the workflow.</li>
+              <li><strong>Attest artifacts:</strong> signs provenance for both the JSON run evidence and the DORA report using <code>actions/attest-build-provenance@v2</code> with OIDC <code>id-token</code> and <code>attestations: write</code> permissions.</li>
+            </ol>
+            <pre class="mermaid">
+flowchart LR
+    A[Security Scans workflow] -- success --> B[Append run log to DORA doc]
+    B --> C[Write run evidence JSON]
+    C --> D[Recompute integrity stamp]
+    D --> E[Commit/push with skip ci]
+    E --> F[Attest evidence JSON]
+    E --> G[Attest DORA report]
+            </pre>
+          </article>
+
+          <article class="card half">
+            <h3><span class="dot"></span>Where to find attestations</h3>
+            <p>Attestations are stored in GitHub, not in git. Open the relevant <code>Security Scans</code> workflow run and click the <strong>Attestations</strong> tab, or use the GitHub CLI:</p>
+            <pre><code>gh attestation verify \
+  --owner oliver-koeth \
+  aidlc-docs/compliance/dora-compliance.md</code></pre>
+            <p>The signed provenance binds the artifact file to the OIDC identity of the workflow run, the repository, and the commit. The run evidence JSON artifact can also be downloaded from the workflow’s artifact list.</p>
+          </article>
+
+          <article class="card half">
+            <h3><span class="dot"></span>Demo: vulnerability gate</h3>
+            <p>The DORA document’s security-testing evidence includes a reproducible vulnerability gate. To demonstrate the gate, a temporary vulnerable <code>Newtonsoft.Json 12.0.1</code> reference was added; the NuGet vulnerability scan failed as expected and the change was then reverted. This proves the CI gate is more than a stub.</p>
+          </article>
+
+          <article class="card full">
+            <div class="artifact-list">
+              <a class="artifact md-popup-link" href="compliance/dora-compliance.md"><strong>DORA compliance document</strong><span>Living position paper with stamp and run log</span></a>
+              <a class="artifact" href="../.aidlc-rule-details/extensions/compliance/dora/dora-compliance.md"><strong>DORA rule file</strong><span>Blocking enforcement rules for AI-DLC stages</span></a>
+              <a class="artifact" href="../.aidlc-rule-details/extensions/compliance/dora/dora-compliance-template.md"><strong>DORA template</strong><span>Bootstrap structure for the compliance paper</span></a>
+              <a class="artifact" href="../.github/workflows/security-scans.yml"><strong>Security Scans workflow</strong><span>CodeQL, Trivy, Gitleaks, DORA evidence, attestations</span></a>
+            </div>
+          </article>
+        </div>
+      </section>
+
       <section id="traceability" data-section>
         <div class="section-head">
           <div>
@@ -1439,6 +1536,11 @@
             <div class="stage-name">Performance NFRs</div>
             <div class="stage-cell"><strong>Output</strong><span>Automated checks for local authorization micro-latency and health endpoint light concurrency.</span></div>
             <div class="stage-cell"><strong>Evidence</strong><span><a class="md-popup-link" href="construction/build-and-test/performance-traceability.md">performance-traceability.md</a> maps NFR-PERF-001 and NFR-PERF-003 to tests and telemetry.</span></div>
+          </div>
+          <div class="stage">
+            <div class="stage-name">DORA compliance</div>
+            <div class="stage-cell"><strong>Output</strong><span>Development-scoped DORA position paper with control mapping, gap register, evidence index, CI run log, and integrity stamp.</span></div>
+            <div class="stage-cell"><strong>Evidence</strong><span><a class="md-popup-link" href="compliance/dora-compliance.md">dora-compliance.md</a> plus GitHub artifact attestations from the Security Scans workflow.</span></div>
           </div>
         </div>
       </section>
@@ -1513,6 +1615,18 @@
               <a class="artifact md-popup-link" href="construction/build-and-test/performance-test-instructions.md"><strong>Performance test instructions</strong><span>Release-mode micro-latency and concurrency tests</span></a>
               <a class="artifact md-popup-link" href="construction/build-and-test/performance-traceability.md"><strong>Performance traceability</strong><span>NFRs mapped to executable tests and telemetry</span></a>
               <a class="artifact" href="../tests/AuthModule.ServiceHost.Tests/Performance/"><strong>Performance test code</strong><span>Concurrency and micro-latency test classes</span></a>
+            </div>
+          </div>
+        </details>
+
+        <details>
+          <summary>DORA compliance and provenance outputs</summary>
+          <div class="detail-body">
+            <div class="artifact-list">
+              <a class="artifact md-popup-link" href="compliance/dora-compliance.md"><strong>DORA compliance document</strong><span>Living position paper with control mapping and integrity stamp</span></a>
+              <a class="artifact" href="../.aidlc-rule-details/extensions/compliance/dora/dora-compliance.md"><strong>DORA rule file</strong><span>Extension enforcement rules for the lifecycle</span></a>
+              <a class="artifact" href="../.aidlc-rule-details/extensions/compliance/dora/dora-compliance-template.md"><strong>DORA template</strong><span>Bootstrap structure used to create the first version</span></a>
+              <a class="artifact" href="../.github/workflows/security-scans.yml"><strong>Security Scans workflow</strong><span>CI evidence loop and artifact attestations</span></a>
             </div>
           </div>
         </details>

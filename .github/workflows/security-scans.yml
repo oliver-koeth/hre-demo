@@ -113,8 +113,6 @@ jobs:
 
       - name: Gitleaks secret scan
         uses: gitleaks/gitleaks-action@v2
-        with:
-          args: detect --source . --no-git --report-format json --report-path artifacts/security/gitleaks-report.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

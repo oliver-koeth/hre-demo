@@ -127,9 +127,9 @@ will be provided by operations
 ## 18. Integrity Stamp
 - **Repository**: oliver-koeth/hre-demo
 - **Branch**: oliver-koeth-musical-waddle
-- **Commit SHA (40-char)**: 578178ad87043ef4610629e9681998148323fd6b
+- **Commit SHA (40-char)**: 403a819992378384acce663626bcd36438fbd6c8
 - **Document SHA-256**: 7f327c1957f208b58b31c090640cc48e6c31710a4b6c037e355091c853ac50ce
-- **Generated At (UTC, ISO 8601)**: 2026-07-30T14:02:20Z
+- **Generated At (UTC, ISO 8601)**: 2026-07-30T14:15:23Z
 - **Generator Identity**: GitHub Actions security-scans workflow
 
 Stamp method note: `Document SHA-256` is calculated over this document body up to (but excluding) the `## 18. Integrity Stamp` section to avoid self-referential hashing.
@@ -137,6 +137,7 @@ Stamp method note: `Document SHA-256` is calculated over this document body up t
 ## 19. CI Security Scan Run Log
 | Timestamp (UTC) | Workflow | Run ID | Attempt | Result | URL | CodeQL Job | Dependency/Secrets/Container Job |
 |---|---|---:|---:|---|---|---|---|
+| 2026-07-30T14:15:23Z | Security Scans | 30550622706 | 1 | success | https://github.com/oliver-koeth/hre-demo/actions/runs/30550622706 | success | success |
 | 2026-07-30T14:02:20Z | Security Scans | 30549521668 | 1 | success | https://github.com/oliver-koeth/hre-demo/actions/runs/30549521668 | success | success |
 | 2026-07-30T08:58:16Z | Security Scans | 30528615432 | 1 | success | https://github.com/oliver-koeth/hre-demo/actions/runs/30528615432 | success | success |
 | 2026-07-30T06:08:57Z | Security Scans | 30518555114 | 1 | success | https://github.com/oliver-koeth/hre-demo/actions/runs/30518555114 | success | success |

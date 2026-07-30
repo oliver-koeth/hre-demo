@@ -587,7 +587,7 @@
 
     .concept-stage {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+      grid-template-columns: minmax(0, 1.35fr) minmax(260px, 320px);
       gap: 18px;
       align-items: stretch;
     }
@@ -650,33 +650,60 @@
 
     .concept-popup {
       position: absolute;
-      top: 86px;
-      left: 34px;
-      width: min(380px, calc(100% - 68px));
+      inset: 18px;
       display: none;
       z-index: 4;
-      pointer-events: none;
-    }
-
-    .concept-popup.after {
-      left: auto;
-      right: 34px;
+      pointer-events: auto;
     }
 
     .concept-popup.open { display: block; }
 
     .comparison-tile {
+      height: 100%;
       border: 1px solid rgba(141,164,199,.25);
       border-radius: var(--radius);
       background:
         linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.025)),
         linear-gradient(145deg, rgba(16,23,34,.98), rgba(8,12,19,.98));
       box-shadow: 0 24px 70px rgba(0,0,0,.48), inset 0 1px 0 rgba(255,255,255,.08);
-      overflow: hidden;
+      overflow: auto;
     }
 
     .comparison-tile-inner {
-      padding: 18px;
+      position: relative;
+      height: 100%;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: 10px;
+      padding: 22px;
+    }
+
+    .comparison-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(141,164,199,.34);
+      border-radius: 50%;
+      color: var(--text);
+      background: rgba(7,11,19,.82);
+      font-size: 1.15rem;
+      font-weight: 800;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .comparison-close:hover,
+    .comparison-close:focus {
+      border-color: rgba(126,241,223,.72);
+      color: #81e7ff;
+    }
+
+    .comparison-header {
+      padding-right: 46px;
     }
 
     .comparison-kicker {
@@ -700,33 +727,47 @@
 
     .comparison-tile h3 {
       margin: 10px 0 8px;
-      font-size: 1.1rem;
+      font-size: clamp(1.15rem, 2vw, 1.85rem);
       line-height: 1.12;
     }
 
     .comparison-tile p {
       color: var(--muted);
-      font-size: .88rem;
+      font-size: clamp(.86rem, 1vw, .96rem);
       line-height: 1.35;
     }
 
+    .comparison-body {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, .55fr) minmax(0, 1.45fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .comparison-copy {
+      min-width: 0;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
     .comparison-mini-diagram {
-      margin-top: 14px;
-      height: 260px;
+      min-width: 0;
+      min-height: 0;
     }
 
     .comparison-mini-diagram svg {
       width: 100%;
       height: 100%;
       display: block;
-      overflow: visible;
+      overflow: hidden;
     }
 
     .comparison-notes {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
     }
 
     .comparison-note {
@@ -736,15 +777,16 @@
       border-radius: var(--radius);
       background: rgba(255,255,255,.045);
       color: #d9e4f5;
-      font-size: .78rem;
+      font-size: .86rem;
       line-height: 1.28;
+      overflow-wrap: anywhere;
     }
 
     .comparison-note strong {
       display: block;
       margin-bottom: 3px;
       color: var(--text);
-      font-size: .76rem;
+      font-size: .78rem;
       text-transform: uppercase;
     }
 
@@ -789,6 +831,13 @@
       .stage { grid-template-columns: 1fr; }
       .concept-stage { grid-template-columns: 1fr; }
       .concept-chart-wrap { min-height: 500px; }
+      .comparison-body {
+        grid-template-columns: 1fr;
+        overflow: auto;
+      }
+      .comparison-mini-diagram {
+        min-height: 340px;
+      }
     }
 
     @media (max-width: 620px) {
@@ -823,10 +872,13 @@
       .concept-chart { min-height: 410px; }
       .concept-popup,
       .concept-popup.after {
-        left: 14px;
-        right: 14px;
-        top: 58px;
-        width: auto;
+        inset: 10px;
+      }
+      .comparison-tile-inner {
+        padding: 16px;
+      }
+      .comparison-notes {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -888,9 +940,6 @@
             <div class="concept-badge">Core shift</div>
             <svg class="concept-chart" viewBox="0 0 804 560" role="img" aria-label="Human effort descending over time toward autonomy">
               <defs>
-                <marker id="concept-arrow-green" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#8ee6a8"/>
-                </marker>
                 <linearGradient id="concept-curve-grad" x1="0" x2="1" y1="0" y2="0">
                   <stop offset="0" stop-color="#43c8e8"/>
                   <stop offset=".58" stop-color="#8ee6a8"/>
@@ -948,52 +997,49 @@
                 <text x="110" y="56" text-anchor="middle" class="svg-muted" font-size="14">from judgement</text>
                 <text x="110" y="76" text-anchor="middle" class="svg-muted" font-size="14">to executable checks</text>
               </g>
-
-              <g transform="translate(168 360)">
-                <rect x="0" y="0" width="220" height="72" rx="8" fill="rgba(142,230,168,.08)" stroke="rgba(142,230,168,.55)"/>
-                <text x="110" y="29" text-anchor="middle" class="svg-label" font-size="18" fill="#eefbdc">Hydration lowers</text>
-                <text x="110" y="53" text-anchor="middle" class="svg-label" font-size="18" fill="#eefbdc">manual heavy-lifts</text>
-              </g>
-
-              <path d="M532 198 C530 244 512 302 526 352" fill="none" stroke="#8ee6a8" stroke-width="3" stroke-dasharray="8 8" marker-end="url(#concept-arrow-green)"/>
-              <text x="558" y="238" class="svg-label" font-size="18" fill="#b6ec70">descent toward</text>
-              <text x="558" y="260" class="svg-label" font-size="18" fill="#b6ec70">autonomous delivery</text>
             </svg>
 
             <div class="concept-popup before" data-concept-card="before" aria-hidden="true">
               <article class="comparison-tile">
                 <div class="comparison-tile-inner">
-                  <div class="comparison-kicker before"><span class="dot"></span> Human-corrected loop</div>
-                  <h3>Before: humans are the verifier</h3>
-                  <p>AI drafts the work, but correctness lives in repeated human review. The correction fixes the current output, yet the judgement pattern is often not captured.</p>
-                  <div class="comparison-mini-diagram">
-                    <svg viewBox="0 0 552 560" role="img" aria-label="Simplified loop without self correction">
-                      <defs>
-                        <marker id="concept-arrow-amber" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                          <path d="M 0 0 L 10 5 L 0 10 z" fill="#ffd078"/>
-                        </marker>
-                      </defs>
-                      <rect x="82" y="24" width="388" height="70" rx="8" fill="#151f2d" stroke="#40506a"/>
-                      <text x="276" y="54" text-anchor="middle" class="svg-label" font-size="22">Intent / task</text>
-                      <text x="276" y="78" text-anchor="middle" class="svg-muted" font-size="15">Ambiguous inputs and expectations</text>
-                      <rect x="82" y="145" width="388" height="78" rx="8" fill="#132a34" stroke="#43c8e8"/>
-                      <text x="276" y="176" text-anchor="middle" class="svg-label" font-size="22">AI creates output</text>
-                      <text x="276" y="201" text-anchor="middle" class="svg-muted" font-size="15">Draft, plan, code, design, or analysis</text>
-                      <path d="M276 94 L276 136" stroke="#ffd078" stroke-width="3" marker-end="url(#concept-arrow-amber)"/>
-                      <path d="M276 262 L418 342 L276 422 L134 342 Z" fill="#3a2b17" stroke="#ffd078" stroke-width="2.5"/>
-                      <text x="276" y="331" text-anchor="middle" class="svg-label" font-size="21">Human reviews</text>
-                      <text x="276" y="357" text-anchor="middle" class="svg-label" font-size="21">and corrects</text>
-                      <path d="M276 223 L276 253" stroke="#ffd078" stroke-width="3" marker-end="url(#concept-arrow-amber)"/>
-                      <rect x="92" y="482" width="368" height="58" rx="8" fill="#17231a" stroke="#8ee6a8"/>
-                      <text x="276" y="518" text-anchor="middle" class="svg-label" font-size="21">Accepted output</text>
-                      <path d="M276 422 L276 473" stroke="#8ee6a8" stroke-width="3" marker-end="url(#concept-arrow-amber)"/>
-                      <path d="M420 342 H512 V184 H478" fill="none" stroke="#ffd078" stroke-width="3" stroke-dasharray="9 8" marker-end="url(#concept-arrow-amber)"/>
-                      <text x="522" y="270" class="svg-label" font-size="17" fill="#ffd078" transform="rotate(-90 522 270)">manual rework</text>
-                    </svg>
+                  <button class="comparison-close" type="button" data-concept-close aria-label="Close popup">x</button>
+                  <div class="comparison-header">
+                    <div class="comparison-kicker before"><span class="dot"></span> Human-corrected loop</div>
+                    <h3>Before: humans are the verifier</h3>
+                  </div>
+                  <div class="comparison-body">
+                    <div class="comparison-copy">
+                      <p>AI-DLC 1.0 structures the SDLC, but each stage still relies on human stakeholders to judge, validate, and steer. Corrections improve the current output without reliably becoming reusable machine checks.</p>
+                    </div>
+                    <div class="comparison-mini-diagram">
+                      <svg viewBox="0 0 552 560" role="img" aria-label="Simplified loop without self correction">
+                        <defs>
+                          <marker id="concept-arrow-amber" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#ffd078"/>
+                          </marker>
+                        </defs>
+                        <rect x="82" y="24" width="388" height="70" rx="8" fill="#151f2d" stroke="#40506a"/>
+                        <text x="276" y="54" text-anchor="middle" class="svg-label" font-size="22">Intent / task</text>
+                        <text x="276" y="78" text-anchor="middle" class="svg-muted" font-size="15">Ambiguous inputs and expectations</text>
+                        <rect x="82" y="145" width="388" height="78" rx="8" fill="#132a34" stroke="#43c8e8"/>
+                        <text x="276" y="176" text-anchor="middle" class="svg-label" font-size="22">AI creates output</text>
+                        <text x="276" y="201" text-anchor="middle" class="svg-muted" font-size="15">Draft, plan, code, design, or analysis</text>
+                        <path d="M276 94 L276 136" stroke="#ffd078" stroke-width="3" marker-end="url(#concept-arrow-amber)"/>
+                        <path d="M276 262 L418 342 L276 422 L134 342 Z" fill="#3a2b17" stroke="#ffd078" stroke-width="2.5"/>
+                        <text x="276" y="331" text-anchor="middle" class="svg-label" font-size="21">Human reviews</text>
+                        <text x="276" y="357" text-anchor="middle" class="svg-label" font-size="21">and corrects</text>
+                        <path d="M276 223 L276 253" stroke="#ffd078" stroke-width="3" marker-end="url(#concept-arrow-amber)"/>
+                        <rect x="92" y="482" width="368" height="58" rx="8" fill="#17231a" stroke="#8ee6a8"/>
+                        <text x="276" y="518" text-anchor="middle" class="svg-label" font-size="21">Accepted output</text>
+                        <path d="M276 422 L276 473" stroke="#8ee6a8" stroke-width="3" marker-end="url(#concept-arrow-amber)"/>
+                        <path d="M420 342 H512 V184 H478" fill="none" stroke="#ffd078" stroke-width="3" stroke-dasharray="9 8" marker-end="url(#concept-arrow-amber)"/>
+                        <text x="522" y="270" class="svg-label" font-size="17" fill="#ffd078" transform="rotate(-90 522 270)">manual rework</text>
+                      </svg>
+                    </div>
                   </div>
                   <div class="comparison-notes">
                     <div class="comparison-note"><strong>Cost</strong>Effort repeats because judgement is reapplied manually.</div>
-                    <div class="comparison-note"><strong>Learning gap</strong>Corrections are useful, but not automatically operationalized.</div>
+                    <div class="comparison-note"><strong>Learning gap</strong>Human corrections are useful, but remain one-off unless promoted into post-conditions or guardrails.</div>
                   </div>
                 </div>
               </article>
@@ -1002,47 +1048,54 @@
             <div class="concept-popup after" data-concept-card="after" aria-hidden="true">
               <article class="comparison-tile">
                 <div class="comparison-tile-inner">
-                  <div class="comparison-kicker after"><span class="dot"></span> Self-correcting loop</div>
-                  <h3>After: AI verifies, corrects, and escalates</h3>
-                  <p>With sound, checkable post-conditions, AI can iterate toward convergence. Halting limits prevent runaway loops and route unresolved work back to humans.</p>
-                  <div class="comparison-mini-diagram">
-                    <svg viewBox="0 0 552 560" role="img" aria-label="Self correcting loop with halting and human escalation">
-                      <defs>
-                        <marker id="concept-arrow-cyan" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                          <path d="M 0 0 L 10 5 L 0 10 z" fill="#43c8e8"/>
-                        </marker>
-                        <marker id="concept-arrow-green-right" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                          <path d="M 0 0 L 10 5 L 0 10 z" fill="#8ee6a8"/>
-                        </marker>
-                      </defs>
-                      <rect x="86" y="20" width="380" height="52" rx="8" fill="#151f2d" stroke="#40506a"/>
-                      <text x="276" y="52" text-anchor="middle" class="svg-label" font-size="20">Start stage</text>
-                      <path d="M276 72 L276 102" stroke="#43c8e8" stroke-width="3" marker-end="url(#concept-arrow-cyan)"/>
-                      <path d="M276 102 L410 178 L276 254 L142 178 Z" fill="#102f3d" stroke="#43c8e8" stroke-width="2.5"/>
-                      <text x="276" y="169" text-anchor="middle" class="svg-label" font-size="19">Clarification</text>
-                      <text x="276" y="193" text-anchor="middle" class="svg-label" font-size="19">needed?</text>
-                      <rect x="72" y="290" width="408" height="54" rx="8" fill="#17231a" stroke="#8ee6a8"/>
-                      <text x="276" y="323" text-anchor="middle" class="svg-label" font-size="19">Plan and execute</text>
-                      <path d="M276 254 L276 281" stroke="#8ee6a8" stroke-width="3" marker-end="url(#concept-arrow-green-right)"/>
-                      <rect x="72" y="380" width="408" height="56" rx="8" fill="#132a34" stroke="#43c8e8"/>
-                      <text x="276" y="402" text-anchor="middle" class="svg-label" font-size="18">Self-verify against</text>
-                      <text x="276" y="424" text-anchor="middle" class="svg-label" font-size="18">post-conditions</text>
-                      <path d="M276 344 L276 371" stroke="#43c8e8" stroke-width="3" marker-end="url(#concept-arrow-cyan)"/>
-                      <path d="M276 436 L276 455" stroke="#43c8e8" stroke-width="3" marker-end="url(#concept-arrow-cyan)"/>
-                      <path d="M276 436 L394 494 L276 552 L158 494 Z" fill="#102f3d" stroke="#43c8e8" stroke-width="2.5"/>
-                      <text x="276" y="500" text-anchor="middle" class="svg-label" font-size="19">Pass?</text>
-                      <rect x="424" y="474" width="102" height="50" rx="8" fill="#17231a" stroke="#8ee6a8"/>
-                      <text x="475" y="505" text-anchor="middle" class="svg-label" font-size="18">Done</text>
-                      <path d="M394 494 L415 494" stroke="#8ee6a8" stroke-width="3" marker-end="url(#concept-arrow-green-right)"/>
-                      <path d="M158 494 H82 V178 H134" fill="none" stroke="#43c8e8" stroke-width="3" stroke-dasharray="8 7" marker-end="url(#concept-arrow-cyan)"/>
-                      <rect x="386" y="76" width="132" height="44" rx="8" fill="#3a2b17" stroke="#ffd078"/>
-                      <text x="452" y="103" text-anchor="middle" class="svg-label" font-size="16">Ask human</text>
-                      <path d="M410 178 H496 V98 H428" fill="none" stroke="#ffd078" stroke-width="3" marker-end="url(#concept-arrow-cyan)"/>
-                    </svg>
+                  <button class="comparison-close" type="button" data-concept-close aria-label="Close popup">x</button>
+                  <div class="comparison-header">
+                    <div class="comparison-kicker after"><span class="dot"></span> Self-correcting loop</div>
+                    <h3>After: AI verifies, corrects, and escalates</h3>
+                  </div>
+                  <div class="comparison-body">
+                    <div class="comparison-copy">
+                      <p>AI-DLC 2.0 expands autonomy where inputs, expected outputs, and post-conditions are explicit. AI can clarify ambiguity, retry against checks, and escalate when iteration or token limits are reached.</p>
+                    </div>
+                    <div class="comparison-mini-diagram">
+                      <svg viewBox="0 0 552 560" role="img" aria-label="Self correcting loop with halting and human escalation">
+                        <defs>
+                          <marker id="concept-arrow-cyan" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#43c8e8"/>
+                          </marker>
+                          <marker id="concept-arrow-green-right" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#8ee6a8"/>
+                          </marker>
+                        </defs>
+                        <rect x="86" y="20" width="380" height="52" rx="8" fill="#151f2d" stroke="#40506a"/>
+                        <text x="276" y="52" text-anchor="middle" class="svg-label" font-size="20">Start stage</text>
+                        <path d="M276 72 L276 102" stroke="#43c8e8" stroke-width="3" marker-end="url(#concept-arrow-cyan)"/>
+                        <path d="M276 102 L410 178 L276 254 L142 178 Z" fill="#102f3d" stroke="#43c8e8" stroke-width="2.5"/>
+                        <text x="276" y="169" text-anchor="middle" class="svg-label" font-size="19">Clarification</text>
+                        <text x="276" y="193" text-anchor="middle" class="svg-label" font-size="19">needed?</text>
+                        <rect x="72" y="290" width="408" height="54" rx="8" fill="#17231a" stroke="#8ee6a8"/>
+                        <text x="276" y="323" text-anchor="middle" class="svg-label" font-size="19">Plan and execute</text>
+                        <path d="M276 254 L276 281" stroke="#8ee6a8" stroke-width="3" marker-end="url(#concept-arrow-green-right)"/>
+                        <rect x="72" y="380" width="408" height="56" rx="8" fill="#132a34" stroke="#43c8e8"/>
+                        <text x="276" y="402" text-anchor="middle" class="svg-label" font-size="18">Self-verify against</text>
+                        <text x="276" y="424" text-anchor="middle" class="svg-label" font-size="18">post-conditions</text>
+                        <path d="M276 344 L276 371" stroke="#43c8e8" stroke-width="3" marker-end="url(#concept-arrow-cyan)"/>
+                        <path d="M276 436 L276 455" stroke="#43c8e8" stroke-width="3" marker-end="url(#concept-arrow-cyan)"/>
+                        <path d="M276 436 L394 494 L276 552 L158 494 Z" fill="#102f3d" stroke="#43c8e8" stroke-width="2.5"/>
+                        <text x="276" y="500" text-anchor="middle" class="svg-label" font-size="19">Pass?</text>
+                        <rect x="424" y="474" width="102" height="50" rx="8" fill="#17231a" stroke="#8ee6a8"/>
+                        <text x="475" y="505" text-anchor="middle" class="svg-label" font-size="18">Done</text>
+                        <path d="M394 494 L415 494" stroke="#8ee6a8" stroke-width="3" marker-end="url(#concept-arrow-green-right)"/>
+                        <path d="M158 494 H82 V178 H134" fill="none" stroke="#43c8e8" stroke-width="3" stroke-dasharray="8 7" marker-end="url(#concept-arrow-cyan)"/>
+                        <rect x="386" y="76" width="132" height="44" rx="8" fill="#3a2b17" stroke="#ffd078"/>
+                        <text x="452" y="103" text-anchor="middle" class="svg-label" font-size="16">Ask human</text>
+                        <path d="M410 178 H496 V98 H428" fill="none" stroke="#ffd078" stroke-width="3" marker-end="url(#concept-arrow-cyan)"/>
+                      </svg>
+                    </div>
                   </div>
                   <div class="comparison-notes">
                     <div class="comparison-note"><strong>Autonomy</strong>Programmatic checks let AI find and repair its own defects.</div>
-                    <div class="comparison-note"><strong>Safety net</strong>Iteration and token budgets keep the loop bounded.</div>
+                    <div class="comparison-note"><strong>Safety net</strong>Human judgement remains for ambiguity, incomplete rules, halted loops, and non-mechanical validation.</div>
                   </div>
                 </div>
               </article>
@@ -1669,14 +1722,11 @@ flowchart LR
       const popup = document.querySelector(`[data-concept-card="${popupName}"]`);
       if (!popup) return;
 
-      const wasOpen = popup.classList.contains("open");
       closeConceptPopups();
 
-      if (!wasOpen) {
-        popup.classList.add("open");
-        popup.setAttribute("aria-hidden", "false");
-        trigger.classList.add("active");
-      }
+      popup.classList.add("open");
+      popup.setAttribute("aria-hidden", "false");
+      trigger.classList.add("active");
     }
 
     async function openMarkdown(link) {
@@ -1723,6 +1773,10 @@ flowchart LR
           toggleConceptPopup(trigger);
         }
       });
+    });
+
+    document.querySelectorAll("[data-concept-close]").forEach((button) => {
+      button.addEventListener("click", closeConceptPopups);
     });
 
     closeBtn.addEventListener("click", closeModal);

@@ -8,6 +8,8 @@ Map security-related requirements to executable security tests and CI scan evide
 | Requirement ID | Requirement intent | Automated tests/scans | Evidence |
 |---|---|---|---|
 | FR-03 | Privileged operations require governance controls and separation of duties | `ApprovalWorkflowTests.*`, `ApprovalSecurityTests.*` | test results in `AuthModule.CoreSecurity.Tests` and `AuthModule.ServiceHost.Tests` |
+| FR-U02-007 | User search requires a valid authenticated actor and a permission grant | `UserSearchTests.SearchUsers_WithoutActorHeader_ShouldReturn401`, `UserSearchTests.SearchUsers_WithInvalidActorHeader_ShouldReturn401`, `UserSearchTests.SearchUsers_ByUnauthorizedActor_ShouldReturn403` | test results in `AuthModule.ServiceHost.Tests` |
+| FR-U02-008 | Search query length is bounded to prevent abuse | `UserSearchTests.SearchUsers_WithShortQuery_ShouldReturn400`, `UserSearchTests.SearchUsers_WithLongQuery_ShouldReturn400` | test results in `AuthModule.ServiceHost.Tests` |
 | FR-05 | Token lifecycle validation and rejection of invalid/unsafe tokens | `TokenSecurityNegativeTests.*` | test results in `AuthModule.CoreSecurity.Tests` |
 | NFR-02 | Security-first blocking quality constraints | `ci-main.yml` security test steps | GitHub Actions run logs |
 | NFR-10 | Supply-chain and third-party risk controls for CI/CD dependencies | NuGet vulnerability scan in `security-scans.yml` | `artifacts/security/nuget-vulnerabilities.json`, step summary |

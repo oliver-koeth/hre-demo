@@ -17,6 +17,7 @@ This unit implements US-01..US-06 using UOW-01 foundations. It introduces runtim
 | User lifecycle | Disable only in V1; no delete; immediate access termination |
 | Permission key model | `resource:action` |
 | API error model | Domain `Result` -> RFC7807 Problem Details with correlation ID |
+| User search scope | Match `DisplayName` substring, case-insensitive; paginate (default 20, max 100) |
 
 ---
 
@@ -147,4 +148,5 @@ StepUpStatus = Pending | Satisfied | Failed | Expired
 | PBT-U02-05 | Idempotence | Disabling an already-disabled user leaves access state unchanged after first disable |
 | PBT-U02-06 | Invariant | Approval ticket cannot transition from Rejected/Applied back to Pending |
 | PBT-U02-07 | Invariant | MFA step-up required operations never execute when challenge status != Satisfied |
+| PBT-U02-08 | Search | Searching with the exact display name returns that user when the search term is a case-insensitive substring |
 

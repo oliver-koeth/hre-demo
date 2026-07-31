@@ -14,6 +14,13 @@ public sealed record AuthorizationRequest(Guid UserId, string Resource, string A
 public sealed record DisableUserRequest(Guid UserId, string Reason);
 public sealed record CreateUserRequest(string Username, string Email, string DisplayName, Guid CreatedBy);
 public sealed record UpdateUserRequest(Guid UserId, string DisplayName);
+public sealed record SearchUsersRequest(string Query, int Page, int PageSize);
+public sealed record UserSearchResult(Guid UserId, string Username, string DisplayName, string Email, UserStatus Status);
+public sealed record SearchUsersResponse(
+    IReadOnlyList<UserSearchResult> Results,
+    int TotalCount,
+    int Page,
+    int PageSize);
 public sealed record ApprovalRequest(Guid RoleId, Guid PermissionId, string ChangeType);
 public sealed record ApprovalDecisionRequest(Guid TicketId, bool Approved, string? RejectionReason);
 
@@ -55,4 +62,5 @@ public interface IUserAdministrationService
     Task<Result<User, DomainError>> CreateUserAsync(CreateUserRequest request, RequestContext context);
     Task<Result<User, DomainError>> UpdateUserAsync(UpdateUserRequest request, RequestContext context);
     Task<Result<User, DomainError>> DisableUserAsync(DisableUserRequest request, RequestContext context);
+    Task<Result<SearchUsersResponse, DomainError>> SearchUsersAsync(SearchUsersRequest request, RequestContext context);
 }

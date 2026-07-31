@@ -13,7 +13,7 @@
 | Abuse protection | Per-IP + per-account rate limits | Mitigates shared-IP noise and account-targeted attacks together |
 | JWT signing | HMAC symmetric in V1 | Matches current architecture and key handling model |
 | Event retention | 90 days minimum | Meets baseline monitoring/compliance retention floor |
-| PBT scope | Auth/token invariants only | Prioritizes highest-risk runtime correctness properties for UOW-02 |
+| PBT scope | Auth/token invariants + user search | Prioritizes highest-risk runtime correctness properties for UOW-02 and extends coverage to the new search feature |
 
 ---
 

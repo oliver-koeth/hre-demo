@@ -18,6 +18,7 @@ This document defines UOW-02 non-functional requirements for authentication, tok
 - **NFR-U02-001**: `/auth/login` sustained throughput target is **50 req/s**.
 - **NFR-U02-002**: Protected endpoint token validation P99 latency target is **< 50 ms**.
 - **NFR-U02-003**: Login and token validation handlers must expose separate latency and error metrics for SLO tracking.
+- **NFR-U02-018**: User search P99 latency target is **< 100 ms** for result sets up to the maximum page size of 100, on the existing JSON-file persistence. This is a best-effort SLO because full-store scan is inherent to the chosen persistence strategy.
 
 ### 2. Availability and Reliability
 - **NFR-U02-004**: Governed role-permission approval operations must target **99.5% monthly availability**.
@@ -40,6 +41,7 @@ This document defines UOW-02 non-functional requirements for authentication, tok
 - **NFR-U02-015**: Property-based testing scope for UOW-02 is **auth/token invariants only**.
 - **NFR-U02-016**: PBT must run with FsCheck and include shrinking and reproducible failing seeds.
 - **NFR-U02-017**: Example-based tests remain mandatory for business-critical auth/admin paths.
+- **NFR-U02-019**: The user search feature must have at least one property-based test verifying that searching by the exact display name returns the matching user, and at least one example-based integration test covering authorization, validation, case-insensitive substring matching, pagination, and disabled-user inclusion.
 
 ---
 

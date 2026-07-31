@@ -73,4 +73,15 @@
   - token issued/rejected
   - privileged operation step-up failure
   - role-permission approval requested/approved/rejected/applied
+  - user search executed
+
+## BR-U02-13 User Search
+- Search term is matched against `User.DisplayName` using case-insensitive substring comparison.
+- Search term must be between 2 and 100 characters after trimming.
+- Results include all user statuses (Active, PendingActivation, Locked, Disabled).
+- Results are sorted by `DisplayName` ascending, then `Username` ascending.
+- Pagination uses a continuation-token style: the service returns `Page`, `PageSize`, `TotalCount`, and a list of `Items`.
+- Page size defaults to 20 and is capped at 100.
+- Caller must hold `users:search` permission; otherwise the request is denied with `DEFAULT_DENY`.
+- Each search call emits a `UserSearchExecuted` security audit event containing actor, query term, result count, correlation ID, and timestamp.
 

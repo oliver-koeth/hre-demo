@@ -12,6 +12,7 @@ public sealed class UserAdministrationService(
     IStoreRepository<User> userRepository,
     ICoreSecurityStateStore stateStore,
     IPasswordVerificationService passwordVerificationService,
+    IAuthorizationService authorizationService,
     IAuditEventSink auditEventSink) : IUserAdministrationService
 {
     public async Task<Result<User, DomainError>> CreateUserAsync(CreateUserRequest request, RequestContext context)
@@ -93,5 +94,76 @@ public sealed class UserAdministrationService(
         }, context);
 
         return Result<User, DomainError>.Success(user);
+    }
+
+    public async Task<Result<SearchUsersResponse, DomainError>> SearchUsersAsync(SearchUsersRequest request, RequestContext context)
+    {
+        if (context.UserId is null)
+        {
+            return Result<SearchUsersResponse, DomainError>.Failure(
+                ErrorFactory.Unauthorized("Authenticated actor is required to search users.", context));
+        }
+
+        var authorization = await authorizationService.AuthorizeAsync(
+            new AuthorizationRequest(context.UserId.Value, "users", "search"),
+            context);
+        if (authorization.IsFailure)
+        {
+            return Result<SearchUsersResponse, DomainError>.Failure(
+                ErrorFactory.Forbidden("User search authorization could not be evaluated.", context));
+        }
+
+        if (!authorization.Value.Allowed)
+        {
+            return Result<SearchUsersResponse, DomainError>.Failure(
+                ErrorFactory.Forbidden("Caller lacks permission to search users.", context));
+        }
+
+        var query = request.Query.Trim();
+        if (query.Length is < 2 or > 100)
+        {
+            return Result<SearchUsersResponse, DomainError>.Failure(
+                ErrorFactory.Validation("Search query must be between 2 and 100 characters after trimming.", context));
+        }
+
+        var allUsers = await userRepository.SearchAsync(new StoreSearchQuery<User>(_ => true), context);
+        if (allUsers.IsFailure)
+        {
+            return Result<SearchUsersResponse, DomainError>.Failure(
+                ErrorFactory.Internal("User search failed.", context));
+        }
+
+        var normalizedQuery = query.ToLowerInvariant();
+        var matched = allUsers.Value
+            .Where(u => u.DisplayName.ToLowerInvariant().Contains(normalizedQuery))
+            .OrderBy(u => u.DisplayName, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(u => u.Username, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        var pageSize = Math.Clamp(request.PageSize is <= 0 ? 20 : request.PageSize, 1, 100);
+        var page = Math.Max(request.Page, 1);
+        var paged = matched
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(u => new UserSearchResult(
+                u.UserId,
+                u.Username,
+                u.DisplayName,
+                u.Email,
+                u.Status))
+            .ToList();
+
+        await auditEventSink.AppendSecurityEventAsync(new SecurityAuditEvent
+        {
+            EventId = Guid.NewGuid(),
+            EventType = SecurityEventType.UserSearchExecuted,
+            ActorId = context.UserId,
+            CorrelationId = context.CorrelationId,
+            Timestamp = context.Timestamp,
+            Result = OperationResult.Success,
+            Details = $"query={query}; total={matched.Count}; page={page}; pageSize={pageSize}",
+        }, context);
+
+        return Result<SearchUsersResponse, DomainError>.Success(new SearchUsersResponse(paged, matched.Count, page, pageSize));
     }
 }

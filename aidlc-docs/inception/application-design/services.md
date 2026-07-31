@@ -15,6 +15,7 @@
   2. Evaluate operation policy (deny-by-default).
   3. Execute authorized mutation/read.
   4. Return decision and reason metadata.
+- **Read Operations**: Includes authorized user search (`users:search`), which delegates to the persistence gateway for JSON-store queries and records an audit event via the Evidence and Audit Service.
 
 ## S-03 Privileged Change Governance Service
 - **Coordinates**: Admin API Component + Approval Workflow Component + Authorization Domain Component + Audit and Evidence Component.

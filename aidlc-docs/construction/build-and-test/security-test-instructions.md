@@ -11,7 +11,14 @@ Validate security-critical behavior and run baseline open-source security scans 
 - `ApprovalSecurityTests.RequestApproval_ShouldReject_WhenActorHeaderMissing`
 - `ApprovalSecurityTests.DecideApproval_ShouldReject_WhenActorHeaderMissing`
 
-### 2. JWT negative-path validation
+### 2. User search authorization and input validation
+- `UserSearchTests.SearchUsers_WithoutActorHeader_ShouldReturn401`
+- `UserSearchTests.SearchUsers_WithInvalidActorHeader_ShouldReturn401`
+- `UserSearchTests.SearchUsers_ByUnauthorizedActor_ShouldReturn403`
+- `UserSearchTests.SearchUsers_WithShortQuery_ShouldReturn400`
+- `UserSearchTests.SearchUsers_WithLongQuery_ShouldReturn400`
+
+### 3. JWT negative-path validation
 - `TokenSecurityNegativeTests.Validate_ShouldFail_ForTamperedToken`
 - `TokenSecurityNegativeTests.Validate_ShouldFail_ForExpiredToken`
 - `TokenSecurityNegativeTests.Validate_ShouldFail_ForWrongIssuer`

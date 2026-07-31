@@ -58,6 +58,7 @@
   - Approval module
   - Rate-limit module
   - MFA integration module
+  - User search module (read-only, delegates to authorization + audit)
 
 ---
 
@@ -84,13 +85,17 @@
 - Security events remain hot for at least 90 days.
 - Periodic archival snapshots preserve evidence continuity.
 
+### SecP-U02-05 Authorized Read Path
+- User search follows the same authorization evaluation path as other protected admin reads.
+- Reuse of `IAuthorizationService` prevents divergence in enforcement behavior and keeps audit/evidence capture consistent.
+
 ---
 
 ## 4. Pattern-to-NFR Mapping
 | NFR | Applied Patterns |
 |---|---|
-| NFR-U02-001/002/003 | SP-U02-01, PP-U02-01, PP-U02-02 |
+| NFR-U02-001/002/003/018 | SP-U02-01, PP-U02-01, PP-U02-02 |
 | NFR-U02-004/005/006 | RP-U02-01, RP-U02-02 |
-| NFR-U02-007/008/009/010/011 | RP-U02-03, SecP-U02-01, SecP-U02-02, SecP-U02-04 |
+| NFR-U02-007/008/009/010/011 | RP-U02-03, SecP-U02-01, SecP-U02-02, SecP-U02-04, SecP-U02-05 |
 | NFR-U02-012/013/014 | SecP-U02-03, PP-U02-02 |
-| NFR-U02-015/016/017 | (Carried to code-generation test strategy) |
+| NFR-U02-015/016/017/019 | (Carried to code-generation test strategy) |

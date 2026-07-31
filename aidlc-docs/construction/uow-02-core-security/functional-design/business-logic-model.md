@@ -7,6 +7,7 @@
 - **US-04** User Lifecycle Administration
 - **US-05** Role and Permission Catalog Management
 - **US-06** Authorization Enforcement on Protected Endpoints
+- **US-06a** User Search by Display Name
 
 ---
 
@@ -118,7 +119,30 @@ Constraints:
 
 ---
 
-## 7. API Contract Mapping
+## 7. User Search (US-06a)
+
+Flow:
+1. Validate actor header is present and maps to a user.
+2. Authorize caller for `users:search` via `IAuthorizationService`.
+3. Validate search term length (2–100 characters after trimming).
+4. Query JSON store for all `User` records where `DisplayName` contains the search term (case-insensitive).
+5. Sort by `DisplayName` ascending, then `Username` ascending.
+6. Apply pagination (default 20, max 100).
+7. Map page to `UserSearchResult` DTOs including status.
+8. Emit `UserSearchExecuted` security audit event.
+9. Return `SearchUsersResponse` with page, page size, total count, and items.
+
+Error mapping:
+
+| Domain Error | HTTP Status | errorCode |
+|---|---|---|
+| ValidationFailed | 400 | VALIDATION_FAILED |
+| Forbidden | 403 | FORBIDDEN |
+| Internal | 500 | INTERNAL_ERROR |
+
+---
+
+## 8. API Contract Mapping
 
 Domain `Result` maps to HTTP:
 
@@ -135,11 +159,12 @@ Each error response includes `correlationId`.
 
 ---
 
-## 8. PBT-Focused Behaviors for Downstream Code Generation
+## 9. PBT-Focused Behaviors for Downstream Code Generation
 
 - Permission resolution invariant: allow iff at least one exact active grant exists.
 - Token validation invariants: all mandatory checks are conjunctive; any single failure denies.
 - Disable-user idempotence: second disable preserves disabled state and does not re-enable access.
 - Approval workflow state invariants: no invalid backward transitions.
 - Email normalization idempotence.
+- User search invariant: a user whose display name equals a provided search term is returned when that term is a case-insensitive substring of the display name.
 

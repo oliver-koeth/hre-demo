@@ -45,6 +45,12 @@ Within it, the following internal modules are logical components with strict int
 - Keeps hot security event retention >= 90 days.
 - Triggers periodic archival snapshot workflow.
 
+## LC-U02-11 UserSearchModule
+- Performs case-insensitive substring search against JSON-store user records.
+- Applies pagination bounds (default 20, max 100) before returning results.
+- Delegates authorization check to AuthorizationModule (`users:search`).
+- Emits `UserSearchExecuted` security audit event via SecurityAlertModule.
+
 ---
 
 ## Interaction Flow
@@ -54,8 +60,9 @@ Within it, the following internal modules are logical components with strict int
 4. If admin-sensitive action: MfaIntegrationModule verification required.
 5. AuthorizationModule evaluates required permission.
 6. If governed permission change: ApprovalModule handles SoD flow.
-7. ErrorMappingMiddleware standardizes failures.
-8. SecurityAlertModule and RetentionArchivalModule persist/alert as needed.
+7. If user search: UserSearchModule executes the read and emits an audit event.
+8. ErrorMappingMiddleware standardizes failures.
+9. SecurityAlertModule and RetentionArchivalModule persist/alert as needed.
 
 ---
 
@@ -72,3 +79,4 @@ Within it, the following internal modules are logical components with strict int
 | RFC7807 mapping | ErrorMappingMiddleware |
 | Lockout alerting | SecurityAlertModule |
 | Event retention/archival | RetentionArchivalModule |
+| User search | UserSearchModule |

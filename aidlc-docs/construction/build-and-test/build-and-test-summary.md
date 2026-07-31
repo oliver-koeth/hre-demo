@@ -6,6 +6,7 @@ This package covers build and test instructions for completed construction units
 - UOW-02 Core Security
 - UOW-03 Governance
 - UOW-04 Integration Readiness
+- UOW-05 User Search
 
 ## Instruction Set Generated
 - `build-instructions.md`: full solution restore/build sequence and troubleshooting
@@ -21,8 +22,8 @@ This package covers build and test instructions for completed construction units
 - Build completes with zero errors
 - Unit tests pass across all four unit test projects
 - Integration tests pass for conformance, traceability, runtime artifact, and gate-decision behavior
-- HTTP integration tests pass across all 25 test cases covering the full API surface
-- Performance tests pass for NFR-PERF-001 and NFR-PERF-003 with telemetry artifacts captured
+- HTTP integration tests pass across all 35 test cases covering the full API surface
+- Performance tests pass for NFR-PERF-001, NFR-PERF-003, and NFR-U02-018 with telemetry artifacts captured
 - Security tests pass for token-validation negative paths and approval actor enforcement
 - Security scans pass (CodeQL, NuGet vulnerabilities, Trivy, Gitleaks)
 

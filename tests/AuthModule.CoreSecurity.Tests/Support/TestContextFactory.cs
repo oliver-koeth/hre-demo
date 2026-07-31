@@ -72,7 +72,7 @@ public static class TestContextFactory
         var authorizationService = new AuthorizationService(permissions, stateStore);
         var approvalService = new ApprovalWorkflowService(securityConfig, stateStore, sink);
         var mfaService = new MfaVerificationService(securityConfig, stateStore, sink);
-        var userService = new UserAdministrationService(users, stateStore, password, sink);
+        var userService = new UserAdministrationService(users, stateStore, password, authorizationService, sink);
 
         var user = new User
         {

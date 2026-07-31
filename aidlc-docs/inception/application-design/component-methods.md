@@ -8,6 +8,7 @@
 - `Task<UserDto> CreateUserAsync(CreateUserRequest request, AdminContext context)`
 - `Task<UserDto> UpdateUserAsync(UpdateUserRequest request, AdminContext context)`
 - `Task DisableUserAsync(DisableUserRequest request, AdminContext context)`
+- `Task<SearchUsersResponse> SearchUsersAsync(SearchUsersRequest request, RequestContext context)`
 - `Task<RoleDto> CreateRoleAsync(CreateRoleRequest request, AdminContext context)`
 - `Task<PermissionDto> CreatePermissionAsync(CreatePermissionRequest request, AdminContext context)`
 - `Task AssignRolePermissionAsync(AssignRolePermissionRequest request, AdminContext context)`

@@ -9,6 +9,7 @@ Validate local performance baselines without a dedicated load rig by measuring:
 ## Implemented Performance Requirements
 - **NFR-PERF-001**: authorization evaluation stays within local p95 budget for sequential requests.
 - **NFR-PERF-003**: health endpoint sustains light parallel traffic with zero failures and bounded p95 latency.
+- **NFR-U02-018**: user search stays within local p99 budget for up to 100 returned results.
 
 ## Test Artifacts
 - **Project**: `tests/AuthModule.ServiceHost.Tests/AuthModule.ServiceHost.Tests.csproj`
@@ -27,12 +28,17 @@ dotnet build AuthModule.slnx --configuration Release --nologo
 PERF_RESULTS_DIR="$(pwd)/artifacts/perf" dotnet test tests/AuthModule.ServiceHost.Tests/AuthModule.ServiceHost.Tests.csproj --configuration Release --no-build --filter "PerfType=Micro" --nologo
 ```
 
-### 3. Run light-concurrency test
+### 3. Run user search micro-latency test
+```bash
+PERF_RESULTS_DIR="$(pwd)/artifacts/perf" dotnet test tests/AuthModule.ServiceHost.Tests/AuthModule.ServiceHost.Tests.csproj --configuration Release --no-build --filter "PerfType=Micro" --nologo
+```
+
+### 4. Run light-concurrency test
 ```bash
 PERF_RESULTS_DIR="$(pwd)/artifacts/perf" dotnet test tests/AuthModule.ServiceHost.Tests/AuthModule.ServiceHost.Tests.csproj --configuration Release --no-build --filter "PerfType=Concurrency" --nologo
 ```
 
-### 4. Inspect telemetry
+### 5. Inspect telemetry
 Each JSON artifact includes:
 - `RequirementId`, `Scenario`, `Endpoint`
 - `P50Ms`, `P95Ms`, `P99Ms`, `MaxMs`

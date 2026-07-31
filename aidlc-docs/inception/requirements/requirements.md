@@ -38,6 +38,15 @@
 - API surface shall include authentication endpoints and admin endpoints for FR-03 objects.
 - Administrative APIs shall support evidence capture for who changed what, when, why, and under which approval context.
 
+### FR-Search-01 User Search
+- The service shall provide an admin API to search users by display name using case-insensitive substring matching.
+- The API shall require the caller to hold a permission for resource `users` and action `search`.
+- The API shall support pagination with a default page size of 20 and a maximum page size of 100.
+- The search term shall be validated to a minimum length of 2 and a maximum length of 100 characters.
+- Results shall be sorted by display name ascending, then by username ascending.
+- Disabled, locked, pending, and active user records shall all be included in results, with their current status exposed.
+- Each search call shall be recorded in the security audit trail with actor, query term, result count, correlation ID, and timestamp.
+
 ### FR-05 Token Lifecycle
 - The first version shall use JWT access tokens with server-side validation on every protected request.
 - Expired/invalid tokens shall be rejected on every protected request.

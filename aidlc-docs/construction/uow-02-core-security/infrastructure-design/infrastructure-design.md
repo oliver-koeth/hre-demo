@@ -13,6 +13,7 @@
 | Q8 Shared strategy | Reuse shared baseline; isolate runtime config and data paths |
 | Q9 Environment topology | Dev only |
 | Q10 Runtime governance | Allow preview runtime with explicit approval note + risk warning |
+| Q11 User search runtime | No new infrastructure; served by existing `auth-module-api` container |
 
 ---
 
@@ -36,6 +37,10 @@
 ### Ephemeral State
 - Rate-limit fixed-window counters are in-process memory structures.
 - Token validation cache (active/inactive + token version) is in-process memory with short TTL.
+
+### User Search Storage
+- User search reads from the existing JSON-file `User` store; no new persistence type or volume is introduced.
+- The search operation is a read-only scan of already-persistent user records.
 
 ### Consequences
 - This design is correct for single-instance dev and preserves low latency.

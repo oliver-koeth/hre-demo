@@ -2,6 +2,7 @@ using AuthModule.CoreSecurity.Application.Contracts;
 using AuthModule.Foundation.Domain.Primitives;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace AuthModule.CoreSecurity.Api;
@@ -102,6 +103,29 @@ public static class CoreSecurityEndpoints
         })
         .WithSummary("Disables a user account.")
         .WithDescription("Blocks the specified user from future authentication and marks the account as disabled.");
+
+        group.MapGet("/users/search", async (string? q, int? page, int? pageSize, HttpContext httpContext, IUserAdministrationService userService) =>
+        {
+            if (!httpContext.Request.Headers.TryGetValue("X-Actor-UserId", out _) ||
+                !Guid.TryParse(httpContext.Request.Headers["X-Actor-UserId"], out _))
+            {
+                return Results.Problem(new ProblemDetails
+                {
+                    Title = "Unauthorized",
+                    Detail = "The X-Actor-UserId header is required and must contain a valid GUID.",
+                    Status = StatusCodes.Status401Unauthorized,
+                    Type = "urn:auth-module:error:Unauthorized",
+                });
+            }
+
+            var context = BuildContext(httpContext);
+            var result = await userService.SearchUsersAsync(
+                new SearchUsersRequest(q ?? string.Empty, page ?? 1, pageSize ?? 20),
+                context);
+            return result.IsSuccess ? Results.Ok(result.Value) : result.Error.ToProblem();
+        })
+        .WithSummary("Searches user accounts by display name.")
+        .WithDescription("Returns a paginated list of users whose display name contains the supplied query string (case-insensitive). Requires the users:search permission.");
 
         return app;
     }

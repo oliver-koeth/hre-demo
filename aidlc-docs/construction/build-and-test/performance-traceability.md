@@ -9,6 +9,7 @@ Map performance-focused non-functional requirements to executable tests and tele
 |---|---|---|---|
 | NFR-PERF-001 | Bound sequential authorization response time for local baseline runs | `MicroLatencyPerformanceTests.NFR_PERF_001_AuthorizationEvaluate_ShouldStayWithinLocalLatencyBudget` | p50/p95/p99/max latency, throughput, failed request count, GC deltas |
 | NFR-PERF-003 | Ensure light in-process concurrency remains stable without failures | `ConcurrencyPerformanceTests.NFR_PERF_003_HealthEndpoint_ShouldHandleLightConcurrencyWithinBudget` | p50/p95/p99/max latency, throughput, failed request count, GC deltas |
+| NFR-U02-018 | User search P99 latency must stay below 100 ms for up to 100 returned results | `MicroLatencyPerformanceTests.NFR_U02_018_UserSearch_ShouldStayWithinLocalLatencyBudget` | p50/p95/p99/max latency, throughput, failed request count, GC deltas |
 
 ## Evidence Locations
 - Local runs: `PERF_RESULTS_DIR` (recommended `artifacts/perf`)

@@ -7,10 +7,10 @@
 ## Deployable Components
 | Component | Deployment Form | Network Scope | Notes |
 |---|---|---|---|
-| AuthControlPlaneService | Container | Internal Docker network | Hosts login, validation, authorization, approval, lockout, and MFA adapter flows |
+| AuthControlPlaneService | Container | Internal Docker network | Hosts login, validation, authorization, approval, lockout, MFA adapter, and user search flows |
 | Local MFA Mock Adapter | In-process adapter endpoint/module | Internal only | Used for synchronous MFA verification behavior without external connectivity |
 | Shared Observability Pipeline | Shared runtime sidecar/sink path | Internal only | Structured logs + traces/metrics exporters |
-| JSON Persistence Volume | Mounted volume | Host-local | Stores unit-scoped persistent approval/audit/auth state |
+| JSON Persistence Volume | Mounted volume | Host-local | Stores unit-scoped persistent approval/audit/auth/user state |
 
 ---
 
@@ -19,7 +19,8 @@
 2. Service applies rate-limit check and token/auth pipeline.
 3. For sensitive operations, service performs synchronous verification against local MFA mock adapter.
 4. Approval operations persist synchronously to shared JSON volume with bounded retries.
-5. Security events and alerts are emitted as structured logs to shared observability pipeline.
+5. User search operations read from the JSON user store and emit a security audit event to the shared observability pipeline.
+6. Security events and alerts are emitted as structured logs to shared observability pipeline.
 
 ---
 

@@ -46,6 +46,7 @@ These tests start the full `ServiceHost` in-process using `WebApplicationFactory
 | `AuthorizationTests` | `POST /api/authz/evaluate` |
 | `MfaTests` | `POST /api/mfa/challenge`, `POST /api/mfa/verify` |
 | `UserAdminTests` | `POST /api/users`, `PUT /api/users/{id}`, `POST /api/users/{id}/disable` |
+| `UserSearchTests` | `GET /api/core-security/users/search` |
 | `GovernanceTests` | `GET /api/governance/audit/security-events`, `POST /api/governance/evidence`, `POST /api/governance/evidence/export`, `POST /api/governance/incidents`, `PUT /api/governance/incidents/{id}/status`, `POST /api/governance/backups/metadata`, `PUT /api/governance/backups/{id}/status` |
 
 ### Run HTTP Integration Tests

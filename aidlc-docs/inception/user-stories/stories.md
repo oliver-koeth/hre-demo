@@ -77,6 +77,18 @@ This story set is **domain-based** and decomposed into **small implementation-re
   4. Given authorization decisions, when responses are emitted, then decision reason and correlation metadata are logged.
 - **Requirements Trace**: FR-03, FR-04, FR-06, SECURITY-08
 
+### US-06a User Search by Display Name
+- **As a** Privileged Access Administrator (P-02)
+- **I want** to search user accounts by display name using a case-insensitive substring
+- **So that** I can locate users quickly without needing the exact full name.
+- **Acceptance Criteria**:
+  1. Given a search term, when the term is included in a user's display name (case-insensitive), then the user record appears in results.
+  2. Given pagination parameters, when results exceed the requested page size, then a paged response with total count and continuation token is returned.
+  3. Given an unauthorized caller, when the search endpoint is invoked, then access is denied with a 403 response.
+  4. Given invalid input, when the search term is too short or too long, then a validation error is returned.
+  5. Given any search request, when processing completes, then a security audit event records actor, query term, result count, correlation ID, and timestamp.
+- **Requirements Trace**: FR-Search-01, FR-04, FR-06
+
 ---
 
 ## Domain D-03: Audit, Evidence, and Compliance Operations

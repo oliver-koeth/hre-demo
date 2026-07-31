@@ -461,13 +461,50 @@ All routes are grouped under `/api/core-security`.
 
 **Response fields:** same as the user response above, with status updated.
 
+## 15. `GET /api/core-security/users/search`
+
+**Business purpose:** allows an administrator to search user accounts by display name. Returns a paginated list of users whose display name contains the supplied query string (case-insensitive). All user statuses are included in the result set.
+
+**Process context:**
+- **Before:** an authenticated actor with the `users:search` permission supplies a query string.
+- **After:** the service returns matching users, sorted by display name then username, and writes a `UserSearchExecuted` audit event.
+
+**Authorization:** requires the `users:search` permission. The caller must supply a valid `X-Actor-UserId` header.
+
+**Query parameters:**
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `q` | string | yes | Search query. Must be 2–100 characters after trimming. |
+| `page` | int | no | Page number (1-based). Defaults to 1. |
+| `pageSize` | int | no | Number of results per page. Defaults to 20, maximum 100. |
+
+**Response fields:**
+
+| Field | Type | Description |
+|---|---|---|
+| `results` | array | Matching user records. |
+| `results[].userId` | GUID | User identifier. |
+| `results[].username` | string | Login name. |
+| `results[].displayName` | string | Human-readable full name. |
+| `results[].email` | string | Email address. |
+| `results[].status` | string | User status. |
+| `totalCount` | int | Total number of matching users across all pages. |
+| `page` | int | Current page number. |
+| `pageSize` | int | Current page size. |
+
+**Error scenarios:**
+- Missing or invalid `X-Actor-UserId` header → `401 Unauthorized`.
+- Caller lacks `users:search` permission → `403 Forbidden`.
+- Query shorter than 2 or longer than 100 characters → `400 ValidationFailed`.
+
 ---
 
 # Governance
 
 All routes are grouped under `/api/governance`.
 
-## 15. `GET /api/governance/audit/security-events`
+## 16. `GET /api/governance/audit/security-events`
 
 **Business purpose:** queries the security audit trail. This is the primary endpoint for compliance reviewers, forensic analysts, and security operations who need to investigate who did what and when.
 
@@ -511,7 +548,7 @@ Each event contains:
 | `timestamp` | DateTimeOffset | UTC timestamp of the event. |
 | `details` | string? | Optional machine-readable details. |
 
-## 16. `POST /api/governance/evidence`
+## 17. `POST /api/governance/evidence`
 
 **Business purpose:** captures an immutable evidence record that proves a control was satisfied. Used for compliance frameworks such as DORA, SOC 2, or internal audit. Evidence can be subject to retention rules and legal holds.
 
@@ -550,7 +587,7 @@ Each event contains:
 | `legalHoldActive` | boolean | Whether a legal hold is active. |
 | `legalHoldReason` | string? | Reason for the legal hold, if any. |
 
-## 17. `POST /api/governance/evidence/export`
+## 18. `POST /api/governance/evidence/export`
 
 **Business purpose:** builds an export package of evidence records for an auditor, regulator, or downstream compliance system.
 
@@ -580,7 +617,7 @@ Each event contains:
 | `manifest.correlationId` | GUID | Request correlation identifier. |
 | `records` | array of `EvidenceRecord` | Matching evidence records. |
 
-## 18. `POST /api/governance/data-subject/requests`
+## 19. `POST /api/governance/data-subject/requests`
 
 **Business purpose:** submits a data-subject rights request, such as a request to retrieve or export personal data. Supports privacy compliance workflows (for example GDPR).
 
@@ -615,7 +652,7 @@ Each event contains:
 **Error scenarios:**
 - Active legal hold on the subject → `422 PolicyViolation` with status `BlockedByHold`.
 
-## 19. `POST /api/governance/retention/invoke`
+## 20. `POST /api/governance/retention/invoke`
 
 **Business purpose:** evaluates and applies retention rules for a given entity type. This is the core lifecycle-management operation that ensures records are kept only as long as required and then deleted, anonymized, or archived.
 
@@ -645,7 +682,7 @@ Each event contains:
 | `blockReason` | string? | Reason if blocked by legal hold. |
 | `correlationId` | GUID | Request correlation identifier. |
 
-## 20. `POST /api/governance/incidents`
+## 21. `POST /api/governance/incidents`
 
 **Business purpose:** registers a governance or security incident. This starts the incident lifecycle and enables investigation, status tracking, and reporting.
 
@@ -679,7 +716,7 @@ Each event contains:
 | `resolvedAt` | DateTimeOffset? | Populated when the incident is resolved or closed. |
 | `correlationId` | GUID | Request correlation identifier. |
 
-## 21. `POST /api/governance/incidents/status`
+## 22. `POST /api/governance/incidents/status`
 
 **Business purpose:** transitions an incident to its next lifecycle state. The status change is recorded with audit context.
 
@@ -698,7 +735,7 @@ Each event contains:
 
 **Response fields:** same as the incident response above, with updated status.
 
-## 22. `POST /api/governance/backups`
+## 23. `POST /api/governance/backups`
 
 **Business purpose:** records backup execution metadata as compliance evidence. This proves that backups were run and where they are stored, supporting business continuity and recovery audits.
 
@@ -727,7 +764,7 @@ Each event contains:
 | `verifiedAt` | DateTimeOffset? | Populated when the backup is marked verified. |
 | `correlationId` | GUID | Request correlation identifier. |
 
-## 23. `POST /api/governance/backups/status`
+## 24. `POST /api/governance/backups/status`
 
 **Business purpose:** updates the lifecycle status of a backup evidence record. Used to record whether the backup completed successfully, failed, or has been verified by a restore test.
 
@@ -752,7 +789,7 @@ Each event contains:
 
 All routes are grouped under `/api/integration`.
 
-## 24. `POST /api/integration/gate/execute`
+## 25. `POST /api/integration/gate/execute`
 
 **Business purpose:** runs the **Integration Readiness Gate**. This gate validates three things before a release or deployment:
 
@@ -816,7 +853,7 @@ The gate returns a `Pass` or `Fail` decision with evidence that can be attached 
 | `traceabilityEntries[].isCovered` | boolean | Whether at least one mapped file exists. |
 | `traceabilityEntries[].note` | string | Traceability note. |
 
-## 25. `GET /api/integration/gate/latest`
+## 26. `GET /api/integration/gate/latest`
 
 **Business purpose:** returns the most recently stored integration gate decision. Useful for dashboards, release gates, and audit evidence without re-running the full gate.
 
@@ -851,17 +888,18 @@ The gate returns a `Pass` or `Fail` decision with evidence that can be attached 
 | 12 | `POST` | `/api/core-security/users` | Core Security | Create user account. |
 | 13 | `PUT` | `/api/core-security/users/{userId}` | Core Security | Update user profile. |
 | 14 | `POST` | `/api/core-security/users/{userId}/disable` | Core Security | Disable user account. |
-| 15 | `GET` | `/api/governance/audit/security-events` | Governance | Query security audit events. |
-| 16 | `POST` | `/api/governance/evidence` | Governance | Capture compliance evidence. |
-| 17 | `POST` | `/api/governance/evidence/export` | Governance | Export evidence package. |
-| 18 | `POST` | `/api/governance/data-subject/requests` | Governance | Submit data-subject request. |
-| 19 | `POST` | `/api/governance/retention/invoke` | Governance | Invoke retention processing. |
-| 20 | `POST` | `/api/governance/incidents` | Governance | Create incident. |
-| 21 | `POST` | `/api/governance/incidents/status` | Governance | Advance incident status. |
-| 22 | `POST` | `/api/governance/backups` | Governance | Append backup evidence. |
-| 23 | `POST` | `/api/governance/backups/status` | Governance | Update backup evidence status. |
-| 24 | `POST` | `/api/integration/gate/execute` | Integration | Execute readiness gate. |
-| 25 | `GET` | `/api/integration/gate/latest` | Integration | Get latest gate decision. |
+| 15 | `GET` | `/api/core-security/users/search` | Core Security | Search users by display name. |
+| 16 | `GET` | `/api/governance/audit/security-events` | Governance | Query security audit events. |
+| 17 | `POST` | `/api/governance/evidence` | Governance | Capture compliance evidence. |
+| 18 | `POST` | `/api/governance/evidence/export` | Governance | Export evidence package. |
+| 19 | `POST` | `/api/governance/data-subject/requests` | Governance | Submit data-subject request. |
+| 20 | `POST` | `/api/governance/retention/invoke` | Governance | Invoke retention processing. |
+| 21 | `POST` | `/api/governance/incidents` | Governance | Create incident. |
+| 22 | `POST` | `/api/governance/incidents/status` | Governance | Advance incident status. |
+| 23 | `POST` | `/api/governance/backups` | Governance | Append backup evidence. |
+| 24 | `POST` | `/api/governance/backups/status` | Governance | Update backup evidence status. |
+| 25 | `POST` | `/api/integration/gate/execute` | Integration | Execute readiness gate. |
+| 26 | `GET` | `/api/integration/gate/latest` | Integration | Get latest gate decision. |
 
 ---
 

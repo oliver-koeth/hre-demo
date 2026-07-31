@@ -18,6 +18,7 @@ public enum SecurityEventType
     AccountDisabled,
     PrivilegedAccess,
     BruteForceDetected,
+    UserSearchExecuted,
 }
 
 public enum EntityChangeType

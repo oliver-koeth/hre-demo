@@ -161,6 +161,33 @@
       font-size: clamp(1.05rem, 1.7vw, 1.34rem);
     }
 
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .scope-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 10px 16px;
+      border: 1px solid rgba(255, 176, 74, .78);
+      border-radius: var(--radius);
+      color: #120b03;
+      background: linear-gradient(135deg, #ffd078, #f59d2f);
+      box-shadow: 0 14px 36px rgba(245, 157, 47, .22);
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .scope-btn:hover,
+    .scope-btn:focus {
+      background: linear-gradient(135deg, #ffe0a3, #ffad3e);
+    }
+
     .hero-strip {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -200,6 +227,30 @@
       margin-bottom: 28px;
     }
 
+    .section-head--stacked {
+      grid-template-columns: 1fr;
+      align-items: start;
+      margin-bottom: 24px;
+    }
+
+    .section-head--stacked .section-summary {
+      margin-top: 12px;
+      max-width: 900px;
+    }
+
+    .concept-divider {
+      height: 1px;
+      background: var(--line);
+      margin: 40px 0;
+    }
+
+    .concept-intro {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-bottom: 20px;
+      max-width: 900px;
+    }
+
     .section-kicker {
       color: var(--cyan);
       font-size: .78rem;
@@ -234,6 +285,8 @@
     .card.wide { grid-column: span 8; }
     .card.full { grid-column: 1 / -1; }
     .card.half { grid-column: span 6; }
+    .card.narrow { grid-column: span 4; }
+    .card.wide-8 { grid-column: span 8; }
 
     .card h3 {
       display: flex;
@@ -417,6 +470,16 @@
     .artifact span { color: var(--quiet); font-size: .8rem; }
     .artifact .modes { display: flex; gap: 8px; font-size: .82rem; }
 
+    .artifact-list--rules .artifact {
+      transition: background-color .15s ease, border-color .15s ease;
+    }
+
+    .artifact-list--rules .artifact:hover,
+    .artifact-list--rules .artifact:focus-visible {
+      background: rgba(255,159,67,.14);
+      border-color: rgba(255,159,67,.65);
+    }
+
     .table {
       width: 100%;
       max-width: 100%;
@@ -444,46 +507,188 @@
       letter-spacing: .06em;
     }
 
-    .table td { color: var(--muted); }
-    .table tr:last-child td { border-bottom: 0; }
-
-    .stage-map {
-      display: grid;
-      gap: 12px;
+    .table--concept {
+      table-layout: fixed;
     }
 
-    .stage {
-      display: grid;
-      grid-template-columns: 170px 1fr 1fr;
-      gap: 12px;
-      align-items: stretch;
+    .table--concept th:first-child,
+    .table--concept td:first-child {
+      width: 190px;
+      white-space: normal;
+      overflow-wrap: normal;
+      word-break: break-word;
     }
 
-    .stage-name,
-    .stage-cell {
-      min-width: 0;
-      padding: 14px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: rgba(255,255,255,.028);
+    .table--concept tbody tr[data-eval-index] {
+      cursor: pointer;
     }
 
-    .stage-name {
-      color: var(--cyan);
+    .table--concept tbody tr[data-eval-index]:hover td {
+      background: rgba(255,159,67,.14);
+    }
+
+    .table--concept tbody tr[data-eval-index].is-open td {
+      background: rgba(126,241,223,.06);
+      border-bottom-color: transparent;
+    }
+
+    .table--concept tbody tr[data-eval-index]:focus-visible td:first-child {
+      outline: 1px solid var(--cyan);
+      outline-offset: -2px;
+    }
+
+    .table--extensions tbody tr:hover td {
+      background: rgba(255,159,67,.14);
+    }
+
+    .table--tests tbody tr:hover td {
+      background: rgba(255,159,67,.14);
+    }
+
+    .table--traceability td:first-child {
+      color: var(--blue);
       font-weight: 800;
+      white-space: nowrap;
     }
 
-    .stage-cell strong {
+    .table--traceability td strong {
       display: block;
       margin-bottom: 4px;
       color: var(--text);
-      font-size: .86rem;
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
     }
 
-    .stage-cell span {
-      color: var(--muted);
-      font-size: .9rem;
+    .table--traceability tbody tr:hover td {
+      background: rgba(255,159,67,.14);
     }
+
+    .table--construction tbody tr:hover td {
+      background: rgba(255,159,67,.14);
+    }
+
+    .eval-caret {
+      display: inline-block;
+      width: 10px;
+      margin-right: 8px;
+      color: var(--cyan);
+      transition: transform .18s ease;
+    }
+
+    .table--concept tbody tr[data-eval-index].is-open .eval-caret {
+      transform: rotate(90deg);
+    }
+
+    .eval-detail td {
+      padding: 0;
+    }
+
+    .eval-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(360px, 460px);
+      align-items: start;
+      gap: 26px;
+      padding: 22px 20px 24px;
+      background: rgba(0,0,0,.18);
+      border-top: 1px dashed var(--line);
+    }
+
+    .eval-copy {
+      min-width: 0;
+    }
+
+    .eval-list-title {
+      font-size: .74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      margin: 0 0 8px;
+    }
+
+    .eval-list-title.strengths { color: #8ee6a8; }
+    .eval-list-title.weaknesses { color: #ffd078; }
+
+    .eval-list {
+      list-style: none;
+      margin: 0 0 18px;
+      padding: 0;
+      display: grid;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .eval-list:last-child { margin-bottom: 0; }
+
+    .eval-item {
+      display: flex;
+      gap: 9px;
+      align-items: flex-start;
+      font-size: .88rem;
+      color: var(--muted);
+      line-height: 1.45;
+      min-width: 0;
+    }
+
+    .eval-item > span:last-child {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .eval-dot {
+      flex: 0 0 auto;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      margin-top: 6px;
+    }
+
+    .eval-item.strength .eval-dot { background: #8ee6a8; }
+    .eval-item.weakness .eval-dot { background: #ffd078; }
+
+    .eval-chart-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      padding-left: 26px;
+      border-left: 1px dashed var(--line);
+    }
+
+    .radar-chart {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .radar-label {
+      font-size: 11px;
+      fill: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .eval-legend {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      display: grid;
+      gap: 5px;
+      font-size: .78rem;
+    }
+
+    .eval-legend li {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+    }
+
+    .eval-legend strong { color: var(--text); }
+
+    .table td { color: var(--muted); }
+    .table tr:last-child td { border-bottom: 0; }
 
     .mermaid-wrap {
       max-width: 100%;
@@ -544,6 +749,37 @@
     }
 
     .modal-title { color: var(--cyan); font-size: 1rem; }
+
+    .image-modal .modal-card {
+      width: min(1500px, 96vw);
+      background: #070b13;
+    }
+
+    .image-modal .close-btn {
+      width: 34px;
+      height: 34px;
+      min-height: 34px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border-radius: 50%;
+      font-size: 1rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .image-modal-content {
+      padding: 14px;
+    }
+
+    .image-modal-content img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #05070b;
+    }
 
     .close-btn {
       min-height: 34px;
@@ -827,8 +1063,7 @@
       .nav a::before { display: none; }
       .section-head { grid-template-columns: 1fr; }
       .hero-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .card, .card.wide, .card.half { grid-column: 1 / -1; }
-      .stage { grid-template-columns: 1fr; }
+      .card, .card.wide, .card.half, .card.narrow, .card.wide-8 { grid-column: 1 / -1; }
       .concept-stage { grid-template-columns: 1fr; }
       .concept-chart-wrap { min-height: 500px; }
       .comparison-body {
@@ -858,6 +1093,18 @@
         table-layout: fixed;
       }
       .table th, .table td { padding: 9px; }
+      .eval-panel {
+        grid-template-columns: 1fr;
+        padding: 16px 12px 18px;
+      }
+      .eval-chart-wrap {
+        align-items: flex-start;
+        padding-left: 0;
+        padding-top: 20px;
+        border-left: none;
+        border-top: 1px dashed var(--line);
+      }
+      .radar-chart { max-width: 280px; }
       .artifact-list { grid-template-columns: 1fr; }
       .pill { white-space: normal; }
       ul.clean li {
@@ -894,14 +1141,15 @@
       <nav class="nav" aria-label="Walkthrough navigation">
         <a href="#concept" data-step="0">Concept</a>
         <a href="#method" data-step="1">Method</a>
-        <a href="#implementation" data-step="2">GitHub rules</a>
+        <a href="#implementation" data-step="2">Copilot configuration</a>
         <a href="#extensions" data-step="3">Extensions</a>
-        <a href="#tests-build" data-step="4">Tests and build</a>
-        <a href="#dora" data-step="5">DORA & provenance</a>
-        <a href="#traceability" data-step="6">Traceability</a>
-        <a href="#result" data-step="7">Actual result</a>
-        <a href="#decomposition" data-step="8">Decomposition</a>
-        <a href="#architecture" data-step="9">Architecture</a>
+        <a href="#tests" data-step="4">Tests</a>
+        <a href="#build" data-step="5">Build</a>
+        <a href="#dora" data-step="6">Compliance</a>
+        <a href="#traceability" data-step="7">Traceability</a>
+        <a href="#result" data-step="8">Actual result</a>
+        <a href="#decomposition" data-step="9">Decomposition</a>
+        <a href="#architecture" data-step="10">Architecture</a>
       </nav>
     </aside>
 
@@ -916,11 +1164,8 @@
           engineering constraints before a line of code is written. Only once stages are approved does the AI turn design into code, tests,
           runtime, and end-to-end traceability.
         </p>
-        <div class="hero-strip" aria-label="Walkthrough facts">
-          <div class="metric"><strong>3 phases</strong><span>Inception, Construction, Operations placeholder</span></div>
-          <div class="metric"><strong>13 stages</strong><span>Adaptive stage plan captured in state</span></div>
-          <div class="metric"><strong>4 units</strong><span>Foundation, Core Security, Governance, Integration</span></div>
-          <div class="metric"><strong>61 tests</strong><span>Unit, property, integration, HTTP, and performance cases</span></div>
+        <div class="hero-actions">
+          <button class="scope-btn" id="demoScopeBtn" type="button">Demo Scope</button>
         </div>
       </header>
 
@@ -928,12 +1173,70 @@
         <div class="section-head">
           <div>
             <div class="section-kicker">0. Concept</div>
-            <h2>Human judgement becomes machine-checkable verification.</h2>
+            <h2>Which AI-DLC to choose?</h2>
           </div>
-          <p class="section-summary">
-            AI-DLC 2.0 turns repeated human correction into executable rules, checks, guardrails, and stage definitions.
-            Click AI-DLC 1.0 or AI-DLC 2.0 in the diagram to compare the before and after operating models.
-          </p>
+        </div>
+        <p class="concept-intro">
+          "AI-DLC" is not one product; it is a fast-moving category of methods and tools for governing AI-driven software delivery, ranging
+          from prescriptive spec-gated lifecycles to bare autonomous loops. The table below compares the options considered before choosing
+          AWS Labs' AI-DLC as the basis for this walkthrough.
+        </p>
+        <table class="table table--concept" aria-label="Comparison of AI-DLC style methodologies and tools">
+          <thead><tr><th>Name</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr data-eval-index="0" tabindex="0" aria-expanded="false">
+              <td><span class="eval-caret" aria-hidden="true">&#9656;</span><a href="https://github.com/bmad-code-org/BMAD-METHOD" target="_blank" rel="noopener">BMAD-METHOD</a></td>
+              <td>Open-source, npm-installed framework built around a scale-adaptive loop (Clarify &rarr; Plan &rarr; Build/Verify &rarr; Learn) driven by specialized AI agent personas (product, architect, UX, dev, test) that produce durable planning artifacts carried across sessions. Small changes can skip straight to build; complex work gets a full planning ceremony, plus a "BMad Loop" mode that can build, verify, and retro an entire epic unattended. Works with most major coding agents and also ships as ChatGPT/Gemini web bundles.</td>
+            </tr>
+            <tr class="eval-detail" hidden><td colspan="2"><div class="eval-panel"></div></td></tr>
+            <tr data-eval-index="1" tabindex="0" aria-expanded="false">
+              <td><span class="eval-caret" aria-hidden="true">&#9656;</span><a href="https://github.com/open-gsd/gsd-core" target="_blank" rel="noopener">GSD (Get Sh*t Done)</a></td>
+              <td>Lightweight meta-prompting and context-engineering layer on top of an existing coding agent (Claude Code, Cursor, Copilot, etc.), built to fight "context rot" via a repeatable Discuss &rarr; Plan &rarr; Execute &rarr; Verify &rarr; Ship loop. Delegates research, planning, and execution to fresh-context subagents and persists all state as plain Markdown/JSON in a <code>.planning/</code> directory, with dependency-aware parallel "wave" execution of independent tasks.</td>
+            </tr>
+            <tr class="eval-detail" hidden><td colspan="2"><div class="eval-panel"></div></td></tr>
+            <tr data-eval-index="2" tabindex="0" aria-expanded="false">
+              <td><span class="eval-caret" aria-hidden="true">&#9656;</span><a href="https://github.com/github/spec-kit" target="_blank" rel="noopener">Spec Kit (SpecKit)</a></td>
+              <td>GitHub's official toolkit for Spec-Driven Development, where the specification generates the implementation rather than just guiding it. A gated slash-command pipeline (<code>constitution &rarr; specify &rarr; clarify &rarr; plan &rarr; tasks &rarr; analyze &rarr; checklist &rarr; implement</code>) works across 30+ coding agents, with extensions, presets, and role-based bundles for compliance, PM, or security personas. Currently the most widely adopted framework in this category by GitHub star count.</td>
+            </tr>
+            <tr class="eval-detail" hidden><td colspan="2"><div class="eval-panel"></div></td></tr>
+            <tr data-eval-index="3" tabindex="0" aria-expanded="false">
+              <td><span class="eval-caret" aria-hidden="true">&#9656;</span><a href="https://ghuntley.com/ralph/" target="_blank" rel="noopener">Ralph</a></td>
+              <td>Not a tool but a technique for fully autonomous, unattended coding: a bash loop that repeatedly feeds the same prompt file to a fresh agent invocation, using each iteration's output (broken or not) as the next iteration's starting point. Relies on one narrow task per loop, a self-rewritten <code>fix_plan.md</code>, parallel subagents for search/write work, and tests/types as "backpressure" against bad generations. Best suited to greenfield work under senior-engineer supervision.</td>
+            </tr>
+            <tr class="eval-detail" hidden><td colspan="2"><div class="eval-panel"></div></td></tr>
+            <tr data-eval-index="4" tabindex="0" aria-expanded="false">
+              <td><span class="eval-caret" aria-hidden="true">&#9656;</span><a href="https://github.com/awslabs/aidlc-workflows" target="_blank" rel="noopener">AI-DLC (AWS Labs)</a></td>
+              <td>AWS's methodology-first approach (instruction/rule files, not a CLI) that plugs into whatever coding agent is in use. Structures work into three adaptive phases &mdash; Inception (what/why), Construction (how), Operations (run) &mdash; executing only the stages that add value, gating each stage behind explicit human approval, and writing every artifact to an auditable <code>aidlc-docs/</code> folder. Supports opt-in compliance extensions (security, resiliency, DORA, property-based testing) as binding, blocking rules. This is the framework used for this walkthrough.</td>
+            </tr>
+            <tr class="eval-detail" hidden><td colspan="2"><div class="eval-panel"></div></td></tr>
+            <tr data-eval-index="5" tabindex="0" aria-expanded="false">
+              <td><span class="eval-caret" aria-hidden="true">&#9656;</span><a href="https://github.com/gastownhall/gastown" target="_blank" rel="noopener">Gas Town</a></td>
+              <td>A multi-agent orchestration and workspace manager rather than a prescriptive lifecycle &mdash; it complements frameworks like AI-DLC or BMAD instead of replacing them. Coordinates many concurrent coding agents across projects using git-backed worktrees ("Hooks"), a Mayor/Rigs/Crew/Polecats taxonomy, a bisecting merge queue so agents never push directly to main, and a tiered watchdog chain for reliability at scale.</td>
+            </tr>
+            <tr class="eval-detail" hidden><td colspan="2"><div class="eval-panel"></div></td></tr>
+            <tr data-eval-index="6" tabindex="0" aria-expanded="false">
+              <td><span class="eval-caret" aria-hidden="true">&#9656;</span><a href="https://github.com/obra/superpowers" target="_blank" rel="noopener">Superpowers</a></td>
+              <td>A composable Claude Code / multi-agent skills plugin implementing a full TDD-first methodology: Socratic brainstorming and design sign-off before any code, bite-sized plans executed by fresh subagents under git worktrees, strict red-green-refactor test-driven development, and mandatory two-stage code review. The single most-starred project in this category.</td>
+            </tr>
+            <tr class="eval-detail" hidden><td colspan="2"><div class="eval-panel"></div></td></tr>
+            <tr data-eval-index="7" tabindex="0" aria-expanded="false">
+              <td><span class="eval-caret" aria-hidden="true">&#9656;</span><a href="https://github.com/Fission-AI/OpenSpec" target="_blank" rel="noopener">OpenSpec</a></td>
+              <td>Brownfield-first spec-driven development: each change gets an isolated proposal/spec/design/tasks folder so concurrent changes never collide, in contrast to more rigid phase-gated approaches. Commands cover explore &rarr; propose &rarr; apply &rarr; archive, with a "fast-forward" mode to generate all artifacts at once and optional cross-repo shared spec stores.</td>
+            </tr>
+            <tr class="eval-detail" hidden><td colspan="2"><div class="eval-panel"></div></td></tr>
+          </tbody>
+        </table>
+
+        <div class="concept-divider"></div>
+
+        <div class="section-head section-head--stacked">
+          <div>
+            <h2>Human judgement becomes machine-checkable verification.</h2>
+            <p class="section-summary">
+              AI-DLC 2.0 turns repeated human correction into executable rules, checks, guardrails, and stage definitions.
+              Click AI-DLC 1.0 or AI-DLC 2.0 in the diagram to compare the before and after operating models.
+            </p>
+          </div>
         </div>
 
         <div class="concept-stage">
@@ -1121,46 +1424,18 @@
       </section>
 
       <section id="method" data-section>
-        <div class="section-head">
+        <div class="section-head section-head--stacked">
           <div>
             <div class="section-kicker">1. Method</div>
             <h2>AI-DLC turns intent into a lifecycle, not a chat transcript.</h2>
+            <p class="section-summary">
+              The paper frames AI-DLC as a shift from AI-assisted coding to AI-driven lifecycle orchestration:
+              humans set the intent and validate gates; AI proposes plans, decomposes work, generates artifacts,
+              and carries context forward.
+            </p>
           </div>
-          <p class="section-summary">
-            The paper frames AI-DLC as a shift from AI-assisted coding to AI-driven lifecycle orchestration:
-            humans set the intent and validate gates; AI proposes plans, decomposes work, generates artifacts,
-            and carries context forward.
-          </p>
         </div>
 
-        <div class="grid">
-          <article class="card">
-            <h3><span class="dot"></span>Reimagine, not retrofit</h3>
-            <p>AI-DLC is designed for AI-native iteration cycles measured in hours or days, not a traditional SDLC with a coding assistant added at the end.</p>
-          </article>
-          <article class="card">
-            <h3><span class="dot"></span>Reverse the conversation</h3>
-            <p>The developer does not keep asking for isolated code snippets. AI asks clarifying questions, proposes stage plans, and makes trade-offs explicit for approval.</p>
-          </article>
-          <article class="card">
-            <h3><span class="dot"></span>Design is core</h3>
-            <p>Requirements, stories, domain decomposition, NFR design, architecture, and testing become first-class artifacts, not optional notes around generated code.</p>
-          </article>
-          <article class="card">
-            <h3><span class="dot"></span>Humans validate gates</h3>
-            <p>Human oversight acts as an early correction mechanism: approve, amend, or stop before downstream code and tests cement a wrong assumption.</p>
-          </article>
-          <article class="card">
-            <h3><span class="dot"></span>Artifacts become memory</h3>
-            <p>Every stage persists context in `aidlc-docs`, so the next stage reads approved requirements, stories, designs, and constraints instead of relying on prompt history.</p>
-          </article>
-          <article class="card">
-            <h3><span class="dot"></span>No hard-wired path</h3>
-            <p>Some stages are mandatory; others execute only when the request, complexity, risk, and workspace state make them useful.</p>
-          </article>
-        </div>
-
-        <div style="height:18px"></div>
         <div class="timeline">
           <div class="phase">
             <small>Inception</small>
@@ -1219,18 +1494,46 @@
             <span>When the repo contains a corresponding artifact folder or file, the label opens it on GitHub.</span>
           </div>
         </div>
+
+        <div style="height:18px"></div>
+        <div class="grid">
+          <article class="card">
+            <h3><span class="dot"></span>Reimagine, not retrofit</h3>
+            <p>AI-DLC is designed for AI-native iteration cycles measured in hours or days, not a traditional SDLC with a coding assistant added at the end.</p>
+          </article>
+          <article class="card">
+            <h3><span class="dot"></span>Reverse the conversation</h3>
+            <p>The developer does not keep asking for isolated code snippets. AI asks clarifying questions, proposes stage plans, and makes trade-offs explicit for approval.</p>
+          </article>
+          <article class="card">
+            <h3><span class="dot"></span>Design is core</h3>
+            <p>Requirements, stories, domain decomposition, NFR design, architecture, and testing become first-class artifacts, not optional notes around generated code.</p>
+          </article>
+          <article class="card">
+            <h3><span class="dot"></span>Humans validate gates</h3>
+            <p>Human oversight acts as an early correction mechanism: approve, amend, or stop before downstream code and tests cement a wrong assumption.</p>
+          </article>
+          <article class="card">
+            <h3><span class="dot"></span>Artifacts become memory</h3>
+            <p>Every stage persists context in `aidlc-docs`, so the next stage reads approved requirements, stories, designs, and constraints instead of relying on prompt history.</p>
+          </article>
+          <article class="card">
+            <h3><span class="dot"></span>No hard-wired path</h3>
+            <p>Some stages are mandatory; others execute only when the request, complexity, risk, and workspace state make them useful.</p>
+          </article>
+        </div>
       </section>
 
       <section id="implementation" data-section>
-        <div class="section-head">
+        <div class="section-head section-head--stacked">
           <div>
             <div class="section-kicker">2. GitHub implementation</div>
             <h2>In this repo, AI-DLC is enforced through Copilot instructions and rule files.</h2>
+            <p class="section-summary">
+              The mechanism is deliberately simple: `.github/copilot-instructions.md` overrides default software-development behavior,
+              resolves `.aidlc-rule-details`, loads common rules, scans extensions, and writes all lifecycle evidence under `aidlc-docs`.
+            </p>
           </div>
-          <p class="section-summary">
-            The mechanism is deliberately simple: `.github/copilot-instructions.md` overrides default software-development behavior,
-            resolves `.aidlc-rule-details`, loads common rules, scans extensions, and writes all lifecycle evidence under `aidlc-docs`.
-          </p>
         </div>
 
         <div class="grid">
@@ -1252,7 +1555,7 @@
             <details open>
               <summary>Key rule and state artifacts</summary>
               <div class="detail-body">
-                <div class="artifact-list">
+                <div class="artifact-list artifact-list--rules">
                   <a class="artifact md-popup-link" href="../.github/copilot-instructions.md"><strong>Copilot instructions</strong><span>Lifecycle override, rule loading, extension loading</span></a>
                   <a class="artifact md-popup-link" href="../.aidlc-rule-details/common/process-overview.md"><strong>Process overview</strong><span>Three-phase lifecycle and adaptive workflow</span></a>
                   <a class="artifact md-popup-link" href="../.aidlc-rule-details/construction/code-generation.md"><strong>Code generation rules</strong><span>Plan-first generation, code location, approval gates</span></a>
@@ -1267,19 +1570,21 @@
       </section>
 
       <section id="extensions" data-section>
-        <div class="section-head">
+        <div class="section-head section-head--stacked">
           <div>
             <div class="section-kicker">3. Extension mechanism</div>
             <h2>Extensions make the lifecycle policy-aware without loading every policy all the time.</h2>
+            <p class="section-summary">
+              The instructions scan an `extensions/` directory for lightweight opt-in prompts. Full rules are loaded only when the user opts in.
+              Enabled rules become hard constraints for applicable stages. The extension model is the bridge from “developer asks Copilot for
+              code” to “organization governs AI-assisted delivery”: it lets compliance, resilience, security, or domain standards become
+              stage-specific gates instead of after-the-fact reviews.
+            </p>
           </div>
-          <p class="section-summary">
-            The instructions scan an `extensions/` directory for lightweight opt-in prompts. Full rules are loaded only when the user opts in.
-            Enabled rules become hard constraints for applicable stages.
-          </p>
         </div>
 
         <div class="grid">
-          <article class="card half">
+          <article class="card narrow">
             <h3><span class="dot"></span>How extension loading works</h3>
             <ul class="clean">
               <li>At workflow start, scan extension folders recursively.</li>
@@ -1289,70 +1594,64 @@
               <li>Record enabled/disabled status in `aidlc-state.md`.</li>
             </ul>
           </article>
-          <article class="card half">
+          <article class="card wide-8">
             <h3><span class="dot"></span>What was enabled here</h3>
-            <table class="table" aria-label="Enabled extensions">
-              <thead><tr><th>Extension</th><th>Decision</th><th>Effect</th></tr></thead>
+            <table class="table table--extensions" aria-label="Enabled extensions">
+              <thead><tr><th>Extension</th><th>Effect</th></tr></thead>
               <tbody>
-                <tr><td>Security Baseline</td><td>Enabled</td><td>Security-first requirements, secrets, fail-closed controls, auditability.</td></tr>
-                <tr><td>Resiliency Baseline</td><td>Enabled</td><td>RTO/RPO, warm standby, backup, restore, continuity decisions.</td></tr>
-                <tr><td>DORA Compliance</td><td>Enabled</td><td>Mandatory DORA compliance document with evidence-linked claims, gap register, integrity stamp, CI-driven refresh, and GitHub artifact attestations.</td></tr>
-                <tr><td>Property-Based Testing</td><td>Enabled</td><td>Invariant and idempotence tests in downstream stages.</td></tr>
+                <tr><td><a href="https://github.com/oliver-koeth/hre-demo/blob/main/.aidlc-rule-details/extensions/security/baseline/security-baseline.md" target="_blank" rel="noopener noreferrer">Security Baseline</a></td><td>Security-first requirements, secrets, fail-closed controls, auditability.</td></tr>
+                <tr><td><a href="https://github.com/oliver-koeth/hre-demo/blob/main/.aidlc-rule-details/extensions/resiliency/baseline/resiliency-baseline.md" target="_blank" rel="noopener noreferrer">Resiliency Baseline</a></td><td>RTO/RPO, warm standby, backup, restore, continuity decisions.</td></tr>
+                <tr><td><a href="https://github.com/oliver-koeth/hre-demo/blob/main/.aidlc-rule-details/extensions/compliance/dora/dora-compliance.md" target="_blank" rel="noopener noreferrer">DORA Compliance</a></td><td>Mandatory DORA compliance document with evidence-linked claims, gap register, integrity stamp, CI-driven refresh, and GitHub artifact attestations.</td></tr>
+                <tr><td><a href="https://github.com/oliver-koeth/hre-demo/blob/main/.aidlc-rule-details/extensions/testing/property-based/property-based-testing.md" target="_blank" rel="noopener noreferrer">Property-Based Testing</a></td><td>Invariant and idempotence tests in downstream stages.</td></tr>
               </tbody>
             </table>
-          </article>
-          <article class="card full">
-            <div class="callout">
-              The extension model is the bridge from “developer asks Copilot for code” to “organization governs AI-assisted delivery.”
-              It lets compliance, resilience, security, or domain standards become stage-specific gates instead of after-the-fact reviews.
-            </div>
           </article>
         </div>
       </section>
 
-      <section id="tests-build" data-section>
-        <div class="section-head">
+      <section id="tests" data-section>
+        <div class="section-head section-head--stacked">
           <div>
-            <div class="section-kicker">4. Tests and build</div>
-            <h2>Testing is generated as part of the lifecycle, then consolidated by a build-and-test gate.</h2>
+            <div class="section-kicker">4. Tests</div>
+            <h2>Testing is generated as part of the lifecycle, organized by purpose.</h2>
+            <p class="section-summary">
+              AI-DLC separates tests by purpose: unit behavior, property/invariant checks, cross-unit conformance, HTTP API integration,
+              executable performance baselines, and future security/continuity testing.
+            </p>
           </div>
-          <p class="section-summary">
-            AI-DLC separates tests by purpose: unit behavior, property/invariant checks, cross-unit conformance, HTTP API integration,
-            executable performance baselines, and future security/continuity testing.
-          </p>
         </div>
 
         <div class="grid">
           <article class="card full">
-            <table class="table" aria-label="Test approach">
+            <table class="table table--tests" aria-label="Test approach">
               <thead><tr><th>Type</th><th>Purpose</th><th>Concrete examples</th><th>Test data shape</th></tr></thead>
               <tbody>
                 <tr>
-                  <td>Unit tests</td>
+                  <td><a href="https://github.com/oliver-koeth/hre-demo/blob/main/tests/AuthModule.CoreSecurity.Tests/Authentication/AuthenticationAndLockoutTests.cs" target="_blank" rel="noopener noreferrer">Unit tests</a></td>
                   <td>Verify focused domain and persistence behavior.</td>
                   <td>`Login_ShouldIssueToken_ForValidCredentials`, `Save_With_Stale_Version_Should_Return_Conflict`</td>
                   <td>Users, roles, permissions, repository records, version metadata.</td>
                 </tr>
                 <tr>
-                  <td>Property-based / invariant tests</td>
+                  <td><a href="https://github.com/oliver-koeth/hre-demo/blob/main/tests/AuthModule.CoreSecurity.Tests/PropertyBased/CoreSecurityPropertyTests.cs" target="_blank" rel="noopener noreferrer">Property-based / invariant tests</a></td>
                   <td>Validate repeatability and invariants across state transitions.</td>
                   <td>`DisableUser_ShouldBeIdempotent`, retention deterministic outcomes.</td>
                   <td>Repeated calls, unchanged state, valid and invalid windows.</td>
                 </tr>
                 <tr>
-                  <td>Cross-unit conformance</td>
+                  <td><a href="https://github.com/oliver-koeth/hre-demo/blob/main/tests/AuthModule.Integration.Tests/Conformance/ContractConformanceTests.cs" target="_blank" rel="noopener noreferrer">Cross-unit conformance</a></td>
                   <td>Ensure contracts are consistent across CoreSecurity, Governance, and Integration.</td>
                   <td>RFC7807 problem details with `errorCode` and `correlationId`.</td>
                   <td>Representative error responses and missing-field blockers.</td>
                 </tr>
                 <tr>
-                  <td>HTTP integration</td>
+                  <td><a href="https://github.com/oliver-koeth/hre-demo/tree/main/tests/AuthModule.ServiceHost.Tests/Api" target="_blank" rel="noopener noreferrer">HTTP integration</a></td>
                   <td>Exercise the full ServiceHost over real HTTP without Docker.</td>
                   <td>Login, token validation, MFA, user admin, audit, evidence, incidents, backups, OpenAPI.</td>
                   <td>Isolated temp stores, generated AES/HMAC keys, request JSON payloads.</td>
                 </tr>
                 <tr>
-                  <td>Performance tests</td>
+                  <td><a href="https://github.com/oliver-koeth/hre-demo/tree/main/tests/AuthModule.ServiceHost.Tests/Performance" target="_blank" rel="noopener noreferrer">Performance tests</a></td>
                   <td>Measure local latency, concurrency stability, throughput, failures, and GC deltas for performance NFRs.</td>
                   <td>`NFR_PERF_001_AuthorizationEvaluate_ShouldStayWithinLocalLatencyBudget`, `NFR_PERF_003_HealthEndpoint_ShouldHandleLightConcurrencyWithinBudget`</td>
                   <td>Release build, in-process ServiceHost, generated temp policy/secrets, JSON telemetry in `PERF_RESULTS_DIR`.</td>
@@ -1373,6 +1672,22 @@
               </tbody>
             </table>
           </article>
+        </div>
+      </section>
+
+      <section id="build" data-section>
+        <div class="section-head section-head--stacked">
+          <div>
+            <div class="section-kicker">5. Build</div>
+            <h2>Tests and build are consolidated by a single build-and-test gate.</h2>
+            <p class="section-summary">
+              Restore, build, and test all units in one deterministic sequence, then publish auditable instructions and telemetry
+              artifacts for the quality gate.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid">
           <article class="card half">
             <h3><span class="dot"></span>Build stages</h3>
             <ul class="clean">
@@ -1386,7 +1701,7 @@
           </article>
           <article class="card half">
             <h3><span class="dot"></span>Build artifacts</h3>
-            <div class="artifact-list">
+            <div class="artifact-list artifact-list--rules">
               <a class="artifact md-popup-link" href="construction/build-and-test/build-instructions.md"><strong>Build instructions</strong><span>Restore, configure, build, troubleshoot</span></a>
               <a class="artifact md-popup-link" href="construction/build-and-test/unit-test-instructions.md"><strong>Unit tests</strong><span>Per-project dotnet test commands</span></a>
               <a class="artifact md-popup-link" href="construction/build-and-test/integration-test-instructions.md"><strong>Integration tests</strong><span>Gate tests and HTTP test coverage</span></a>
@@ -1399,21 +1714,21 @@
       </section>
 
       <section id="dora" data-section>
-        <div class="section-head">
+        <div class="section-head section-head--stacked">
           <div>
-            <div class="section-kicker">5. DORA compliance and provenance</div>
+            <div class="section-kicker">6. Compliance</div>
             <h2>Compliance evidence is generated from repository artifacts, stamped, and attested by the CI pipeline.</h2>
+            <p class="section-summary">
+              The DORA Compliance extension enforces a continuously maintained position paper. The document is scoped to
+              development and local integration; operational sections are explicitly bounded. Each successful security scan
+              refreshes the document, appends a run log entry, updates an integrity stamp, and produces a GitHub artifact
+              attestation for the evidence.
+            </p>
           </div>
-          <p class="section-summary">
-            The DORA Compliance extension enforces a continuously maintained position paper. The document is scoped to
-            development and local integration; operational sections are explicitly bounded. Each successful security scan
-            refreshes the document, appends a run log entry, updates an integrity stamp, and produces a GitHub artifact
-            attestation for the evidence.
-          </p>
         </div>
 
         <div class="grid">
-          <article class="card wide">
+          <article class="card full">
             <h3><span class="dot"></span>DORA compliance document</h3>
             <p>
               The living position paper lives at
@@ -1433,58 +1748,8 @@
             </ul>
           </article>
 
-          <article class="card">
-            <h3><span class="dot"></span>How the stamp works</h3>
-            <p>The SHA-256 digest covers the document body, not the stamp itself. This makes the stamp tamper-evident: any edit to the body changes the digest, and any edit to the stamp is obvious because the digest no longer matches.</p>
-            <p>Fields are updated by a Python step in the <code>dora-evidence-and-attestation</code> job:</p>
-            <ul class="clean">
-              <li>Branch from <code>git rev-parse --abbrev-ref HEAD</code></li>
-              <li>Commit SHA from <code>git rev-parse HEAD</code></li>
-              <li>Document SHA-256 from the body bytes</li>
-              <li>Generated At in UTC ISO 8601</li>
-              <li>Generator Identity set to the GitHub Actions workflow</li>
-            </ul>
-          </article>
-
           <article class="card full">
-            <h3><span class="dot"></span>CI update loop and GitHub attestations</h3>
-            <p>
-              After the <code>Security Scans</code> workflow succeeds, the <code>dora-evidence-and-attestation</code> job performs five steps:
-            </p>
-            <ol class="clean">
-              <li><strong>Append run evidence:</strong> adds a row to the <code>CI Security Scan Run Log</code> section of the DORA document with the run ID, attempt, result, and URL.</li>
-              <li><strong>Write JSON evidence:</strong> creates <code>artifacts/security/security-scan-run-evidence.json</code> with the same metadata plus per-job results.</li>
-              <li><strong>Update stamp:</strong> recomputes the document hash and refreshes branch, commit, timestamp, and generator fields.</li>
-              <li><strong>Commit and push:</strong> pushes the updated document with the message <code>docs: record security scan run evidence [skip ci]</code> so the bot update does not re-trigger the workflow.</li>
-              <li><strong>Attest artifacts:</strong> signs provenance for both the JSON run evidence and the DORA report using <code>actions/attest-build-provenance@v2</code> with OIDC <code>id-token</code> and <code>attestations: write</code> permissions.</li>
-            </ol>
-            <pre class="mermaid">
-flowchart LR
-    A[Security Scans workflow] -- success --> B[Append run log to DORA doc]
-    B --> C[Write run evidence JSON]
-    C --> D[Recompute integrity stamp]
-    D --> E[Commit/push with skip ci]
-    E --> F[Attest evidence JSON]
-    E --> G[Attest DORA report]
-            </pre>
-          </article>
-
-          <article class="card half">
-            <h3><span class="dot"></span>Where to find attestations</h3>
-            <p>Attestations are stored in GitHub, not in git. Open the relevant <code>Security Scans</code> workflow run and click the <strong>Attestations</strong> tab, or use the GitHub CLI:</p>
-            <pre><code>gh attestation verify \
-  --owner oliver-koeth \
-  aidlc-docs/compliance/dora-compliance.md</code></pre>
-            <p>The signed provenance binds the artifact file to the OIDC identity of the workflow run, the repository, and the commit. The run evidence JSON artifact can also be downloaded from the workflow’s artifact list.</p>
-          </article>
-
-          <article class="card half">
-            <h3><span class="dot"></span>Demo: vulnerability gate</h3>
-            <p>The DORA document’s security-testing evidence includes a reproducible vulnerability gate. To demonstrate the gate, a temporary vulnerable <code>Newtonsoft.Json 12.0.1</code> reference was added; the NuGet vulnerability scan failed as expected and the change was then reverted. This proves the CI gate is more than a stub.</p>
-          </article>
-
-          <article class="card full">
-            <div class="artifact-list">
+            <div class="artifact-list artifact-list--rules">
               <a class="artifact md-popup-link" href="compliance/dora-compliance.md"><strong>DORA compliance document</strong><span>Living position paper with stamp and run log</span></a>
               <a class="artifact" href="../.aidlc-rule-details/extensions/compliance/dora/dora-compliance.md"><strong>DORA rule file</strong><span>Blocking enforcement rules for AI-DLC stages</span></a>
               <a class="artifact" href="../.aidlc-rule-details/extensions/compliance/dora/dora-compliance-template.md"><strong>DORA template</strong><span>Bootstrap structure for the compliance paper</span></a>
@@ -1495,72 +1760,75 @@ flowchart LR
       </section>
 
       <section id="traceability" data-section>
-        <div class="section-head">
+        <div class="section-head section-head--stacked">
           <div>
-            <div class="section-kicker">5. Compliance and traceability</div>
+            <div class="section-kicker">7. Compliance and traceability</div>
             <h2>The walkthrough can show how a requirement survives the whole lifecycle.</h2>
+            <p class="section-summary">
+              The trace is not a single matrix only. It is a chain: original prompt, requirements, compliance gap remediation,
+              stories, units, designs, code summaries, tests, and audit entries.
+            </p>
           </div>
-          <p class="section-summary">
-            The trace is not a single matrix only. It is a chain: original prompt, requirements, compliance gap remediation,
-            stories, units, designs, code summaries, tests, and audit entries.
-          </p>
         </div>
 
-        <div class="stage-map">
-          <div class="stage">
-            <div class="stage-name">Intent</div>
-            <div class="stage-cell"><strong>Input</strong><span>Backend authentication module for a reinsurance subledger; C#, JSON persistence, Docker runtime.</span></div>
-            <div class="stage-cell"><strong>Evidence</strong><span><a class="md-popup-link" href="audit.md">Audit timeline</a> records the raw initial prompt.</span></div>
-          </div>
-          <div class="stage">
-            <div class="stage-name">Requirements</div>
-            <div class="stage-cell"><strong>Output</strong><span>FR/NFR set covering auth, authorization, audit, privacy, incidents, backup, governance, testing.</span></div>
-            <div class="stage-cell"><strong>Evidence</strong><span><a class="md-popup-link" href="inception/requirements/requirements.md">requirements.md</a> plus compliance gap updates.</span></div>
-          </div>
-          <div class="stage">
-            <div class="stage-name">Stories</div>
-            <div class="stage-cell"><strong>Output</strong><span>User-facing and compliance-facing behavior slices with acceptance criteria.</span></div>
-            <div class="stage-cell"><strong>Evidence</strong><span><a class="md-popup-link" href="inception/user-stories/stories.md">stories.md</a> and <a class="md-popup-link" href="inception/user-stories/personas.md">personas.md</a>.</span></div>
-          </div>
-          <div class="stage">
-            <div class="stage-name">Units</div>
-            <div class="stage-cell"><strong>Output</strong><span>Four cohesive units with dependency order and story map.</span></div>
-            <div class="stage-cell"><strong>Evidence</strong><span><a class="md-popup-link" href="inception/application-design/unit-of-work-story-map.md">unit-of-work-story-map.md</a>.</span></div>
-          </div>
-          <div class="stage">
-            <div class="stage-name">Code and tests</div>
-            <div class="stage-cell"><strong>Output</strong><span>C# modules, API endpoints, JSON stores, conformance checks, HTTP tests, and executable performance tests.</span></div>
-            <div class="stage-cell"><strong>Evidence</strong><span>Per-unit <a class="md-popup-link" href="construction/uow-02-core-security/code/code-generation-summary.md">code summaries</a> and build/test docs.</span></div>
-          </div>
-          <div class="stage">
-            <div class="stage-name">Performance NFRs</div>
-            <div class="stage-cell"><strong>Output</strong><span>Automated checks for local authorization micro-latency and health endpoint light concurrency.</span></div>
-            <div class="stage-cell"><strong>Evidence</strong><span><a class="md-popup-link" href="construction/build-and-test/performance-traceability.md">performance-traceability.md</a> maps NFR-PERF-001 and NFR-PERF-003 to tests and telemetry.</span></div>
-          </div>
-          <div class="stage">
-            <div class="stage-name">DORA compliance</div>
-            <div class="stage-cell"><strong>Output</strong><span>Development-scoped DORA position paper with control mapping, gap register, evidence index, CI run log, and integrity stamp.</span></div>
-            <div class="stage-cell"><strong>Evidence</strong><span><a class="md-popup-link" href="compliance/dora-compliance.md">dora-compliance.md</a> plus GitHub artifact attestations from the Security Scans workflow.</span></div>
-          </div>
-        </div>
+        <table class="table table--traceability" aria-label="Requirement traceability chain">
+          <thead><tr><th>Stage</th><th>Input / Output</th><th>Evidence</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Intent</td>
+              <td><strong>Input</strong><span>Backend authentication module for a reinsurance subledger; C#, JSON persistence, Docker runtime.</span></td>
+              <td><a class="md-popup-link" href="audit.md">Audit timeline</a> records the raw initial prompt.</td>
+            </tr>
+            <tr>
+              <td>Requirements</td>
+              <td><strong>Output</strong><span>FR/NFR set covering auth, authorization, audit, privacy, incidents, backup, governance, testing.</span></td>
+              <td><a class="md-popup-link" href="inception/requirements/requirements.md">requirements.md</a> plus compliance gap updates.</td>
+            </tr>
+            <tr>
+              <td>Stories</td>
+              <td><strong>Output</strong><span>User-facing and compliance-facing behavior slices with acceptance criteria.</span></td>
+              <td><a class="md-popup-link" href="inception/user-stories/stories.md">stories.md</a> and <a class="md-popup-link" href="inception/user-stories/personas.md">personas.md</a>.</td>
+            </tr>
+            <tr>
+              <td>Units</td>
+              <td><strong>Output</strong><span>Four cohesive units with dependency order and story map.</span></td>
+              <td><a class="md-popup-link" href="inception/application-design/unit-of-work-story-map.md">unit-of-work-story-map.md</a>.</td>
+            </tr>
+            <tr>
+              <td>Code and tests</td>
+              <td><strong>Output</strong><span>C# modules, API endpoints, JSON stores, conformance checks, HTTP tests, and executable performance tests.</span></td>
+              <td>Per-unit <a class="md-popup-link" href="construction/uow-02-core-security/code/code-generation-summary.md">code summaries</a> and build/test docs.</td>
+            </tr>
+            <tr>
+              <td>Performance NFRs</td>
+              <td><strong>Output</strong><span>Automated checks for local authorization micro-latency and health endpoint light concurrency.</span></td>
+              <td><a class="md-popup-link" href="construction/build-and-test/performance-traceability.md">performance-traceability.md</a> maps NFR-PERF-001 and NFR-PERF-003 to tests and telemetry.</td>
+            </tr>
+            <tr>
+              <td>DORA compliance</td>
+              <td><strong>Output</strong><span>Development-scoped DORA position paper with control mapping, gap register, evidence index, CI run log, and integrity stamp.</span></td>
+              <td><a class="md-popup-link" href="compliance/dora-compliance.md">dora-compliance.md</a> plus GitHub artifact attestations from the Security Scans workflow.</td>
+            </tr>
+          </tbody>
+        </table>
       </section>
 
       <section id="result" data-section>
-        <div class="section-head">
+        <div class="section-head section-head--stacked">
           <div>
-            <div class="section-kicker">6. Actual result</div>
+            <div class="section-kicker">8. Actual result</div>
             <h2>The repository is the end-to-end result of the AI-DLC run.</h2>
+            <p class="section-summary">
+              The stage outputs below are the client-facing proof points: each stage has inputs, outputs, and reviewable artifacts.
+              Details stay collapsed until the presenter needs them.
+            </p>
           </div>
-          <p class="section-summary">
-            The stage outputs below are the client-facing proof points: each stage has inputs, outputs, and reviewable artifacts.
-            Details stay collapsed until the presenter needs them.
-          </p>
         </div>
 
         <details open>
           <summary>Inception outputs</summary>
           <div class="detail-body">
-            <div class="artifact-list">
+            <div class="artifact-list artifact-list--rules">
               <a class="artifact md-popup-link" href="inception/requirements/requirements.md"><strong>Requirements</strong><span>Functional, NFR, compliance, trace notes</span></a>
               <a class="artifact md-popup-link" href="inception/user-stories/stories.md"><strong>User stories</strong><span>Accepted behavior and compliance stories</span></a>
               <a class="artifact md-popup-link" href="inception/application-design/application-design.md"><strong>Application design</strong><span>High-level component and service structure</span></a>
@@ -1574,7 +1842,7 @@ flowchart LR
         <details>
           <summary>Construction outputs per unit</summary>
           <div class="detail-body">
-            <table class="table">
+            <table class="table table--construction">
               <thead><tr><th>Unit</th><th>Primary input</th><th>Primary output</th><th>Artifacts</th></tr></thead>
               <tbody>
                 <tr>
@@ -1609,7 +1877,7 @@ flowchart LR
         <details>
           <summary>Build, test, and performance outputs</summary>
           <div class="detail-body">
-            <div class="artifact-list">
+            <div class="artifact-list artifact-list--rules">
               <a class="artifact md-popup-link" href="construction/build-and-test/build-and-test-summary.md"><strong>Build and test summary</strong><span>Quality gate criteria across units</span></a>
               <a class="artifact md-popup-link" href="construction/build-and-test/integration-test-instructions.md"><strong>HTTP integration coverage</strong><span>Full API surface through WebApplicationFactory</span></a>
               <a class="artifact md-popup-link" href="construction/build-and-test/performance-test-instructions.md"><strong>Performance test instructions</strong><span>Release-mode micro-latency and concurrency tests</span></a>
@@ -1622,7 +1890,7 @@ flowchart LR
         <details>
           <summary>DORA compliance and provenance outputs</summary>
           <div class="detail-body">
-            <div class="artifact-list">
+            <div class="artifact-list artifact-list--rules">
               <a class="artifact md-popup-link" href="compliance/dora-compliance.md"><strong>DORA compliance document</strong><span>Living position paper with control mapping and integrity stamp</span></a>
               <a class="artifact" href="../.aidlc-rule-details/extensions/compliance/dora/dora-compliance.md"><strong>DORA rule file</strong><span>Extension enforcement rules for the lifecycle</span></a>
               <a class="artifact" href="../.aidlc-rule-details/extensions/compliance/dora/dora-compliance-template.md"><strong>DORA template</strong><span>Bootstrap structure used to create the first version</span></a>
@@ -1633,50 +1901,50 @@ flowchart LR
       </section>
 
       <section id="decomposition" data-section>
-        <div class="section-head">
+        <div class="section-head section-head--stacked">
           <div>
-            <div class="section-kicker">7. Functional decomposition</div>
+            <div class="section-kicker">9. Functional decomposition</div>
             <h2>The implementation follows the units, not arbitrary prompt output.</h2>
+            <p class="section-summary">
+              The generated solution is a single service with internal module folders. That keeps the demo easy to run while preserving
+              clear unit boundaries for design, code, tests, and traceability.
+            </p>
           </div>
-          <p class="section-summary">
-            The generated solution is a single service with internal module folders. That keeps the demo easy to run while preserving
-            clear unit boundaries for design, code, tests, and traceability.
-          </p>
         </div>
 
         <div class="grid">
           <article class="card">
             <h3><span class="dot"></span>Foundation</h3>
             <p>Shared primitives, request context, configuration, JSON persistence, encryption, signatures, store integrity, diagnostics.</p>
-            <div class="artifact-list">
+            <div class="artifact-list artifact-list--rules">
               <a class="artifact" href="../src/AuthModule/Foundation/Foundation.csproj"><strong>Foundation.csproj</strong><span>Runtime project</span></a>
             </div>
           </article>
           <article class="card">
             <h3><span class="dot"></span>Core Security</h3>
             <p>Authentication, token issuing and validation, authorization decisions, MFA, user administration, approval workflows.</p>
-            <div class="artifact-list">
+            <div class="artifact-list artifact-list--rules">
               <a class="artifact" href="../src/AuthModule/CoreSecurity/CoreSecurity.csproj"><strong>CoreSecurity.csproj</strong><span>Runtime project</span></a>
             </div>
           </article>
           <article class="card">
             <h3><span class="dot"></span>Governance</h3>
             <p>Audit query, evidence capture/export, legal hold behavior, retention, incident and continuity records.</p>
-            <div class="artifact-list">
+            <div class="artifact-list artifact-list--rules">
               <a class="artifact" href="../src/AuthModule/Governance/Governance.csproj"><strong>Governance.csproj</strong><span>Runtime project</span></a>
             </div>
           </article>
           <article class="card">
             <h3><span class="dot"></span>Integration readiness</h3>
             <p>Contract conformance, runtime artifact checks, traceability checks, integration gate outcomes.</p>
-            <div class="artifact-list">
+            <div class="artifact-list artifact-list--rules">
               <a class="artifact" href="../src/AuthModule/Integration/Integration.csproj"><strong>Integration.csproj</strong><span>Runtime project</span></a>
             </div>
           </article>
           <article class="card wide">
             <h3><span class="dot"></span>Service host and runtime</h3>
             <p>All modules are wired into one C# backend service. Docker Compose provides the API container, config/secrets/data mounts, and backup scheduler.</p>
-            <div class="artifact-list">
+            <div class="artifact-list artifact-list--rules">
               <a class="artifact" href="../src/AuthModule/ServiceHost/Program.cs"><strong>Program.cs</strong><span>DI, endpoint mapping, OpenAPI</span></a>
               <a class="artifact" href="../docker-compose.yml"><strong>docker-compose.yml</strong><span>API and backup scheduler</span></a>
               <a class="artifact" href="../config/policy.local.json"><strong>policy.local.json</strong><span>Local policy configuration</span></a>
@@ -1686,15 +1954,15 @@ flowchart LR
       </section>
 
       <section id="architecture" data-section>
-        <div class="section-head">
+        <div class="section-head section-head--stacked">
           <div>
-            <div class="section-kicker">8. Architecture and runtime</div>
+            <div class="section-kicker">10. Architecture and runtime</div>
             <h2>Architecture is presented as the link between lifecycle artifacts and running software.</h2>
+            <p class="section-summary">
+              Use this section when the client asks what the AI-DLC actually produced at runtime:
+              endpoints, modules, stores, secrets, backup behavior, tests, and quality gates.
+            </p>
           </div>
-          <p class="section-summary">
-            Use this section when the client asks what the AI-DLC actually produced at runtime:
-            endpoints, modules, stores, secrets, backup behavior, tests, and quality gates.
-          </p>
         </div>
 
         <div class="mermaid-wrap">
@@ -1786,6 +2054,18 @@ flowchart LR
     </div>
   </div>
 
+  <div class="modal image-modal" id="scopeModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="scopeModalTitle">
+      <div class="modal-header">
+        <h3 class="modal-title" id="scopeModalTitle">Demo Scope</h3>
+        <button class="close-btn" id="closeScopeModalBtn" type="button" aria-label="Close demo scope">x</button>
+      </div>
+      <div class="image-modal-content">
+        <img src="authentication-service-infographic.png" alt="Authentication Module V1 demo service scope infographic" />
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script type="module">
     import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
@@ -1796,6 +2076,9 @@ flowchart LR
     const contentEl = document.getElementById("mdModalContent");
     const hintEl = document.getElementById("mdModalHint");
     const closeBtn = document.getElementById("closeModalBtn");
+    const scopeModal = document.getElementById("scopeModal");
+    const demoScopeBtn = document.getElementById("demoScopeBtn");
+    const closeScopeModalBtn = document.getElementById("closeScopeModalBtn");
     const repoOwner = "oliver-koeth";
     const repoName = "hre-demo";
 
@@ -1820,6 +2103,16 @@ flowchart LR
     function closeModal() {
       modal.classList.remove("open");
       modal.setAttribute("aria-hidden", "true");
+    }
+
+    function openScopeModal() {
+      scopeModal.classList.add("open");
+      scopeModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeScopeModal() {
+      scopeModal.classList.remove("open");
+      scopeModal.setAttribute("aria-hidden", "true");
     }
 
     function closeConceptPopups() {
@@ -1898,8 +2191,16 @@ flowchart LR
     modal.addEventListener("click", (event) => {
       if (event.target === modal) closeModal();
     });
+    demoScopeBtn.addEventListener("click", openScopeModal);
+    closeScopeModalBtn.addEventListener("click", closeScopeModal);
+    scopeModal.addEventListener("click", (event) => {
+      if (event.target === scopeModal) closeScopeModal();
+    });
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") closeModal();
+      if (event.key === "Escape") {
+        closeModal();
+        closeScopeModal();
+      }
     });
 
     const navLinks = [...document.querySelectorAll(".nav a")];
@@ -1916,6 +2217,285 @@ flowchart LR
     }, { rootMargin: "-20% 0px -55% 0px", threshold: [0.1, 0.25, 0.5] });
 
     sections.forEach((section) => observer.observe(section));
+  </script>
+
+  <script>
+    (function () {
+      const DIMENSIONS = [
+        { key: "governance", label: "Governance" },
+        { key: "autonomy", label: "Autonomy" },
+        { key: "traceability", label: "Traceability" },
+        { key: "engineering", label: "Eng. rigor" },
+        { key: "ecosystem", label: "Ecosystem" }
+      ];
+
+      const EVAL_DATA = [
+        {
+          strengths: [
+            "Scale-adaptive loop lets small changes skip straight to build while complex work gets a full planning ceremony, avoiding one-size-fits-all overhead.",
+            "\u201cBMad Loop\u201d mode can build, verify, and retro an entire epic unattended \u2014 the only framework here with an explicit unattended-epic mode.",
+            "Ships as ChatGPT/Gemini Custom GPT \u201cweb bundles\u201d in addition to native support for most major coding agents."
+          ],
+          weaknesses: [
+            "No described compliance/security extension mechanism or blocking policy gates.",
+            "No explicit stage-approval gate structure \u2014 adaptivity substitutes for formal human sign-off."
+          ],
+          scores: { governance: 2, autonomy: 4, traceability: 3, engineering: 2, ecosystem: 5 }
+        },
+        {
+          strengths: [
+            "Persists all state as plain Markdown/JSON in a .planning/ directory (STATE.md, CONTEXT.md, continue-here.md), so nothing depends on conversational memory surviving a /clear.",
+            "Dependency-aware \u201cwave\u201d execution runs independent tasks in parallel via fresh-context subagents.",
+            "Explicit Discuss \u2192 Plan \u2192 Execute \u2192 Verify \u2192 Ship loop bakes a verification step into every cycle."
+          ],
+          weaknesses: [
+            "The \u201cGSD\u201d name is split across at least three distinct, differently-maintained projects, muddying adoption signal.",
+            "No described compliance extensions or human-approval gates between phases."
+          ],
+          scores: { governance: 2, autonomy: 3, traceability: 4, engineering: 4, ecosystem: 2 }
+        },
+        {
+          strengths: [
+            "Eight-command gated pipeline (constitution \u2192 specify \u2192 clarify \u2192 plan \u2192 tasks \u2192 analyze \u2192 checklist \u2192 implement), with checklist explicitly framed as \u201cunit tests for English.\u201d",
+            "Extensible via extensions, presets, and role-based bundles (PM, security, compliance personas).",
+            "Largest adoption in this category (~126k GitHub stars) and works across 30+ coding agents."
+          ],
+          weaknesses: [
+            "Rigor is concentrated on the specification, not the code \u2014 no described mechanism enforcing TDD or code-level test discipline during implementation.",
+            "No unattended/autonomous execution mode; every phase is a discrete, user-invoked command."
+          ],
+          scores: { governance: 5, autonomy: 2, traceability: 4, engineering: 3, ecosystem: 5 }
+        },
+        {
+          strengths: [
+            "Tests, type systems, and static analysis act as deliberate \u201cbackpressure\u201d to reject bad generations, since generation itself is treated as cheap.",
+            "A self-rewritten fix_plan.md and persistent specs/ folder replace chat memory between loop iterations.",
+            "Purpose-built for full unattended autonomy \u2014 literally a while loop with no human step in the cycle."
+          ],
+          weaknesses: [
+            "Its own creator states \u201cno way I\u2019d use Ralph on an existing codebase\u201d \u2014 explicitly greenfield-only.",
+            "No approval gates, artifact-folder convention, or compliance mechanism \u2014 governance is left to the operator tuning prompts as failures emerge."
+          ],
+          scores: { governance: 1, autonomy: 5, traceability: 2, engineering: 3, ecosystem: 2 }
+        },
+        {
+          strengths: [
+            "Gates every stage behind explicit human approval and writes every artifact to an auditable aidlc-docs/ folder.",
+            "Opt-in extensions (security, resiliency, DORA, property-based testing) act as binding, blocking rules rather than advisory guidance.",
+            "Adaptive: only executes the stages that add value for a given request, avoiding ceremony on trivial changes."
+          ],
+          weaknesses: [
+            "Distributed only as instruction/rule files, not a CLI \u2014 capability depends entirely on the host agent following steering rules.",
+            "Smallest adoption footprint measured here (~3.9k GitHub stars) versus Spec Kit or Superpowers."
+          ],
+          scores: { governance: 5, autonomy: 2, traceability: 5, engineering: 4, ecosystem: 3 }
+        },
+        {
+          strengths: [
+            "A Bors-style bisecting merge queue (\u201cRefinery\u201d) means agents never push directly to main.",
+            "Three-tier watchdog chain (Witness \u2192 Deacon \u2192 Dogs) plus git-backed worktrees (\u201cHooks\u201d) give every agent's work persistent, recoverable state.",
+            "Built to coordinate many concurrent agents at scale, with a companion git-native issue tracker (Beads)."
+          ],
+          weaknesses: [
+            "Explicitly an orchestration/workspace layer, not a prescriptive lifecycle \u2014 it complements rather than replaces a methodology like AI-DLC or BMAD, so it has no specify/plan/approve gate of its own.",
+            "No described test-discipline (TDD) requirement for the agents it orchestrates."
+          ],
+          scores: { governance: 3, autonomy: 5, traceability: 4, engineering: 3, ecosystem: 4 }
+        },
+        {
+          strengths: [
+            "Enforces strict red-green-refactor TDD and explicitly deletes pre-test code \u2014 the most rigorous test discipline described here.",
+            "Mandatory two-stage code review (spec-compliance, then code quality) plus a Socratic design sign-off before any code is written.",
+            "Most-starred project in this category (~268k GitHub stars), with support across Claude Code, Codex, Cursor, Gemini CLI, Copilot CLI, and more."
+          ],
+          weaknesses: [
+            "No described compliance/security extension mechanism for regulated environments.",
+            "No persistent, auditable artifact folder equivalent to AI-DLC's aidlc-docs/ or Spec Kit's spec/plan files \u2014 traceability relies on git branches/worktrees rather than a dedicated audit trail."
+          ],
+          scores: { governance: 4, autonomy: 3, traceability: 2, engineering: 5, ecosystem: 5 }
+        },
+        {
+          strengths: [
+            "Each change gets an isolated proposal/spec/design/tasks folder, so concurrent changes never collide \u2014 explicitly positioned as \u201cbrownfield-first.\u201d",
+            "Gated explore \u2192 propose \u2192 apply \u2192 archive pipeline with a \u201cfast-forward\u201d mode to generate all artifacts at once.",
+            "Supports 30+ AI tools and an optional cross-repo/team-shared spec \u201cStores\u201d feature."
+          ],
+          weaknesses: [
+            "No described mechanism enforcing TDD or code-level test discipline during \u201capply.\u201d",
+            "No unattended execution mode \u2014 every stage is an explicit, user-invoked command."
+          ],
+          scores: { governance: 4, autonomy: 2, traceability: 4, engineering: 2, ecosystem: 4 }
+        }
+      ];
+
+      const SVG_NS = "http://www.w3.org/2000/svg";
+      const MAX_SCORE = 5;
+
+      function buildRadarSvg(scores) {
+        const radius = 92;
+        const centerX = radius + 108;
+        const centerY = radius + 40;
+        const viewBoxWidth = centerX + radius + 108;
+        const viewBoxHeight = centerY + radius + 40;
+        const levels = 5;
+        const count = DIMENSIONS.length;
+        const angleStep = (Math.PI * 2) / count;
+
+        function pointAt(index, valueRatio) {
+          const angle = index * angleStep - Math.PI / 2;
+          return [
+            centerX + Math.cos(angle) * radius * valueRatio,
+            centerY + Math.sin(angle) * radius * valueRatio
+          ];
+        }
+
+        const svg = document.createElementNS(SVG_NS, "svg");
+        svg.setAttribute("viewBox", `0 0 ${viewBoxWidth} ${viewBoxHeight}`);
+        svg.setAttribute("class", "radar-chart");
+        svg.setAttribute("role", "img");
+        svg.setAttribute("aria-label", "Radar chart of scores across five dimensions");
+
+        for (let level = 1; level <= levels; level++) {
+          const ratio = level / levels;
+          const ringPoints = DIMENSIONS.map((_, i) => pointAt(i, ratio).join(",")).join(" ");
+          const ring = document.createElementNS(SVG_NS, "polygon");
+          ring.setAttribute("points", ringPoints);
+          ring.setAttribute("fill", "none");
+          ring.setAttribute("stroke", "#2b3548");
+          ring.setAttribute("stroke-width", level === levels ? "1.4" : "1");
+          svg.appendChild(ring);
+        }
+
+        DIMENSIONS.forEach((_, i) => {
+          const [x, y] = pointAt(i, 1);
+          const axis = document.createElementNS(SVG_NS, "line");
+          axis.setAttribute("x1", String(centerX));
+          axis.setAttribute("y1", String(centerY));
+          axis.setAttribute("x2", String(x));
+          axis.setAttribute("y2", String(y));
+          axis.setAttribute("stroke", "#2b3548");
+          axis.setAttribute("stroke-width", "1");
+          svg.appendChild(axis);
+        });
+
+        const dataPoints = DIMENSIONS.map((dim, i) => pointAt(i, scores[dim.key] / MAX_SCORE));
+        const dataPolygon = document.createElementNS(SVG_NS, "polygon");
+        dataPolygon.setAttribute("points", dataPoints.map((p) => p.join(",")).join(" "));
+        dataPolygon.setAttribute("fill", "rgba(126,241,223,.22)");
+        dataPolygon.setAttribute("stroke", "#7ef1df");
+        dataPolygon.setAttribute("stroke-width", "2");
+        svg.appendChild(dataPolygon);
+
+        dataPoints.forEach((p) => {
+          const dot = document.createElementNS(SVG_NS, "circle");
+          dot.setAttribute("cx", String(p[0]));
+          dot.setAttribute("cy", String(p[1]));
+          dot.setAttribute("r", "3");
+          dot.setAttribute("fill", "#7ef1df");
+          svg.appendChild(dot);
+        });
+
+        DIMENSIONS.forEach((dim, i) => {
+          const [x, y] = pointAt(i, 1.34);
+          const text = document.createElementNS(SVG_NS, "text");
+          text.setAttribute("x", String(x));
+          text.setAttribute("y", String(y));
+          const dx = x - centerX;
+          const anchor = dx > 6 ? "start" : dx < -6 ? "end" : "middle";
+          text.setAttribute("text-anchor", anchor);
+          text.setAttribute("dominant-baseline", "middle");
+          text.setAttribute("class", "radar-label");
+          text.textContent = dim.label;
+          svg.appendChild(text);
+        });
+
+        return svg;
+      }
+
+      function buildEvalList(title, titleClass, items, itemClass) {
+        const wrap = document.createElement("div");
+        const heading = document.createElement("p");
+        heading.className = `eval-list-title ${titleClass}`;
+        heading.textContent = title;
+        wrap.appendChild(heading);
+
+        const list = document.createElement("ul");
+        list.className = "eval-list";
+        items.forEach((text) => {
+          const li = document.createElement("li");
+          li.className = `eval-item ${itemClass}`;
+          const dot = document.createElement("span");
+          dot.className = "eval-dot";
+          const span = document.createElement("span");
+          span.textContent = text;
+          li.appendChild(dot);
+          li.appendChild(span);
+          list.appendChild(li);
+        });
+        wrap.appendChild(list);
+        return wrap;
+      }
+
+      function renderEvalPanel(panel, data) {
+        panel.innerHTML = "";
+
+        const copy = document.createElement("div");
+        copy.className = "eval-copy";
+        copy.appendChild(buildEvalList("Strengths", "strengths", data.strengths, "strength"));
+        copy.appendChild(buildEvalList("Weaknesses", "weaknesses", data.weaknesses, "weakness"));
+        panel.appendChild(copy);
+
+        const chartWrap = document.createElement("div");
+        chartWrap.className = "eval-chart-wrap";
+        chartWrap.appendChild(buildRadarSvg(data.scores));
+
+        const legend = document.createElement("ul");
+        legend.className = "eval-legend";
+        DIMENSIONS.forEach((dim) => {
+          const li = document.createElement("li");
+          const label = document.createElement("span");
+          label.textContent = dim.label;
+          const value = document.createElement("strong");
+          value.textContent = `${data.scores[dim.key]} / ${MAX_SCORE}`;
+          li.appendChild(label);
+          li.appendChild(value);
+          legend.appendChild(li);
+        });
+        chartWrap.appendChild(legend);
+        panel.appendChild(chartWrap);
+      }
+
+      function toggleEvalRow(row) {
+        const index = Number(row.getAttribute("data-eval-index"));
+        const detailRow = row.nextElementSibling;
+        if (!detailRow || !detailRow.classList.contains("eval-detail")) return;
+
+        const isOpen = row.classList.toggle("is-open");
+        row.setAttribute("aria-expanded", String(isOpen));
+        detailRow.hidden = !isOpen;
+
+        if (isOpen) {
+          const panel = detailRow.querySelector(".eval-panel");
+          if (panel && !panel.dataset.rendered) {
+            renderEvalPanel(panel, EVAL_DATA[index]);
+            panel.dataset.rendered = "true";
+          }
+        }
+      }
+
+      document.querySelectorAll("tr[data-eval-index]").forEach((row) => {
+        row.addEventListener("click", (event) => {
+          if (event.target.closest("a")) return;
+          toggleEvalRow(row);
+        });
+        row.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            toggleEvalRow(row);
+          }
+        });
+      });
+    })();
   </script>
 </body>
 </html>
